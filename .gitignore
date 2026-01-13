@@ -46,3 +46,8 @@ next-env.d.ts
 
 .trigger/
 certificates
+
+# Claude Code
+.claude/
+CLAUDE.md
+tmpclaude-*
