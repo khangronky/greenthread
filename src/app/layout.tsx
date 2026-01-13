@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'GreenThread',
-  description: 'GreenThread',
+  description: 'Water Management System for Textile Companies',
 };
 
 export default function RootLayout({
