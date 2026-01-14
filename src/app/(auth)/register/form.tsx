@@ -70,7 +70,7 @@ export function RegisterForm() {
     try {
       const response = await registerMutation.mutateAsync(data);
       setEmail(data.email);
-      
+
       if (response.requiresVerification) {
         setOtpSent(true);
         setCooldown(60);
@@ -80,7 +80,9 @@ export function RegisterForm() {
         router.push('/login');
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to register');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to register'
+      );
     }
   }
 
@@ -95,7 +97,9 @@ export function RegisterForm() {
       toast.success('Email verified successfully!');
       router.push('/login');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Invalid verification code');
+      toast.error(
+        error instanceof Error ? error.message : 'Invalid verification code'
+      );
     }
   }
 
@@ -105,7 +109,9 @@ export function RegisterForm() {
       setCooldown(60);
       toast.success('Verification code resent');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to resend code');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to resend code'
+      );
     }
   }
 
@@ -157,9 +163,7 @@ export function RegisterForm() {
             <p className="text-neutral-600 text-sm">
               Didn&apos;t receive the code?{' '}
               {cooldown > 0 ? (
-                <span className="text-neutral-500">
-                  Resend in {cooldown}s
-                </span>
+                <span className="text-neutral-500">Resend in {cooldown}s</span>
               ) : (
                 <button
                   type="button"

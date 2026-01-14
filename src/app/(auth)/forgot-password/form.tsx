@@ -82,7 +82,9 @@ export function ForgotPasswordForm() {
       setCooldown(60);
       toast.success('Recovery code sent to your email');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to send recovery code');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to send recovery code'
+      );
     }
   }
 
@@ -97,7 +99,9 @@ export function ForgotPasswordForm() {
       setStage('password');
       toast.success('Code verified! Enter your new password');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Invalid recovery code');
+      toast.error(
+        error instanceof Error ? error.message : 'Invalid recovery code'
+      );
     }
   }
 
@@ -107,7 +111,9 @@ export function ForgotPasswordForm() {
       setCooldown(60);
       toast.success('Recovery code resent');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to resend code');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to resend code'
+      );
     }
   }
 
@@ -117,7 +123,9 @@ export function ForgotPasswordForm() {
       toast.success('Password reset successfully!');
       router.push('/login');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to reset password');
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to reset password'
+      );
     }
   }
 

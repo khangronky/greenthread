@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
-    
+
     // Get current user (should be authenticated via recovery flow)
     const {
       data: { user },
@@ -38,7 +38,8 @@ export async function POST(request: Request) {
     await supabase.auth.signOut();
 
     return NextResponse.json({
-      message: 'Password updated successfully! Please log in with your new password.',
+      message:
+        'Password updated successfully! Please log in with your new password.',
     });
   } catch (error) {
     console.error('Password update error:', error);
