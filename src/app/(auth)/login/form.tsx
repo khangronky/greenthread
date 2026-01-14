@@ -58,7 +58,9 @@ export function LoginForm() {
   return (
     <Card className="border-neutral-200 bg-white shadow-sm">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl text-neutral-900">Welcome Back</CardTitle>
+        <CardTitle className="text-2xl text-neutral-900">
+          Welcome Back
+        </CardTitle>
         <CardDescription className="text-neutral-600">
           Sign in to your GreenThread account
         </CardDescription>
