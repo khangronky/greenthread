@@ -12,7 +12,6 @@ on:
 
 jobs:
   check-prerequisites:
-    if: false
     name: Check prerequisites
     runs-on: ubuntu-latest
     # Only check if manually triggered or if workflow_run succeeded
@@ -45,7 +44,6 @@ jobs:
           echo "✅ Vercel production deployment completed successfully."
 
   deploy:
-    if: false
     name: Migrate production database
     needs: check-prerequisites
     timeout-minutes: 15

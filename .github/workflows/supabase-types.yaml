@@ -6,7 +6,6 @@ on:
 
 jobs:
   deploy:
-    if: false
     name: Verify generated types
     timeout-minutes: 15
     runs-on: ubuntu-latest
