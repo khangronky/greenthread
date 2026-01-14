@@ -6,13 +6,16 @@ import {
   History as HistoryIcon,
   LayoutDashboard,
   Lightbulb,
+  LogOut,
   Menu,
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/lib/supabase/client';
 
 const navigation = [
   {
@@ -43,7 +46,25 @@ const navigation = [
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      toast.success('Logged out successfully');
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to log out');
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <aside
@@ -111,6 +132,25 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Logout Button */}
+      <div className="border-t p-2">
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className={`w-full justify-start text-muted-foreground hover:text-foreground ${
+            sidebarOpen ? 'px-3' : 'justify-center px-2'
+          }`}
+        >
+          <LogOut className={`h-5 w-5 ${sidebarOpen ? 'mr-3' : ''} shrink-0`} />
+          {sidebarOpen && (
+            <span className="text-sm">
+              {isLoggingOut ? 'Logging out...' : 'Logout'}
+            </span>
+          )}
+        </Button>
+      </div>
 
       {/* Footer */}
       {sidebarOpen && (

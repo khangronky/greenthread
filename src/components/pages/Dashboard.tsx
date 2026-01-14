@@ -46,7 +46,7 @@ import {
   getAIRecommendations,
   getHistoricalData,
   getSensorReadings,
-} from '@/utils/mockData';
+} from '@/data/mockData';
 
 export default function Dashboard() {
   const sensors = getSensorReadings();

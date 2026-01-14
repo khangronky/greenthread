@@ -30,7 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getBlockchainTransactions, getHistoricalData } from '@/utils/mockData';
+import { getBlockchainTransactions, getHistoricalData } from '@/data/mockData';
 
 export default function History() {
   const [selectedPeriod, setSelectedPeriod] = useState(7);
