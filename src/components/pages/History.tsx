@@ -326,7 +326,7 @@ export default function History() {
                   key={tx.id}
                   className="flex items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50"
                 >
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     {tx.status === 'confirmed' ? (
                       <div className="rounded-full bg-green-500/20 p-2">
                         <CheckCircle className="h-5 w-5 text-green-600" />

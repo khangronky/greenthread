@@ -415,7 +415,7 @@ export default function Dashboard() {
             <CardContent>
               <div className="font-bold text-2xl">
                 {(
-                  sensors.find((s) => s.id === 'flowRate')?.value! * 24
+                  (sensors.find((s) => s.id === 'flowRate')?.value ?? 0) * 24
                 ).toFixed(0)}{' '}
                 m³
               </div>
