@@ -645,6 +645,22 @@ export default function Dashboard() {
                     dot={false}
                     strokeWidth={2}
                   />
+                  <Line
+                    type="monotone"
+                    dataKey="conductivity"
+                    stroke="#f59e0b"
+                    name="Conductivity"
+                    dot={false}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="flowRate"
+                    stroke="#ef4444"
+                    name="Flow Rate"
+                    dot={false}
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
