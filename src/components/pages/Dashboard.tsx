@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import {
   Activity,
   AlertTriangle,
@@ -16,6 +17,7 @@ import {
   Waves,
   Wind,
 } from 'lucide-react';
+import Link from 'next/link';
 import {
   CartesianGrid,
   Cell,
@@ -45,14 +47,76 @@ import {
 import {
   getAIRecommendations,
   getHistoricalData,
-  getSensorReadings,
+  type SensorReading,
 } from '@/data/mockData';
+import { fetcher } from '@/lib/api';
+
+// Fetch function for sensor readings from API
+const fetchSensorData = async (): Promise<SensorReading[]> => {
+  const data = await fetcher<SensorReading[]>('/data/current');
+
+  // Convert lastUpdated strings to Date objects
+  return data.map((sensor) => ({
+    ...sensor,
+    lastUpdated: new Date(sensor.lastUpdated),
+  }));
+};
 
 export default function Dashboard() {
-  const sensors = getSensorReadings();
+  const {
+    data: sensors = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['sensorReadings'],
+    queryFn: fetchSensorData,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    staleTime: 20000, // Consider data stale after 20 seconds
+    retry: 3, // Retry failed requests 3 times
+  });
+
   const last24Hours = getHistoricalData(1);
   const recommendations = getAIRecommendations();
   const lastUpdate = new Date();
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-primary border-b-2"></div>
+          <p className="text-muted-foreground">Loading sensor data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTriangle className="h-5 w-5" />
+          <AlertTitle>Failed to Load Sensor Data</AlertTitle>
+          <AlertDescription className="mt-2">
+            <p>
+              {error instanceof Error ? error.message : 'An error occurred'}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="mt-4"
+            >
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const violations = sensors.filter((s) => s.status === 'violation');
   const complianceRate = (
@@ -151,7 +215,7 @@ export default function Dashboard() {
       {/* CyberSecurity & System Status Banner */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-primary/50 bg-primary/5">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-primary/20 p-3">
                 <Shield className="h-6 w-6 text-primary" />
@@ -173,7 +237,7 @@ export default function Dashboard() {
         </Card>
 
         <Card className="border-green-500/50 bg-green-500/5">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-green-500/20 p-3">
                 <Lock className="h-6 w-6 text-green-600" />
@@ -322,7 +386,7 @@ export default function Dashboard() {
                 {sensors.length - violations.length}
               </div>
               <p className="mt-1 text-muted-foreground text-xs">
-                Within QCVN limits
+                Within Compliance Limits
               </p>
             </CardContent>
           </Card>
@@ -631,9 +695,11 @@ export default function Dashboard() {
                   Critical metrics requiring immediate attention
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
-                View All Plans
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/ai-plan">
+                  View All Plans
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </CardHeader>

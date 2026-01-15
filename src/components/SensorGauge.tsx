@@ -65,8 +65,8 @@ export default function SensorGauge({
         </RadialBarChart>
 
         {/* Center value display */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-8">
-          <div className="font-bold text-3xl">{value.toFixed(1)}</div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-10">
+          <div className="font-bold text-2xl">{value.toFixed(1)}</div>
           <div className="text-muted-foreground text-sm">{unit}</div>
         </div>
       </div>
