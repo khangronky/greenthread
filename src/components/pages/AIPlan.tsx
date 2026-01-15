@@ -21,7 +21,7 @@ import {
   type AIRecommendation,
   getAIRecommendations,
   getSensorReadings,
-} from '@/utils/mockData';
+} from '@/data/mockData';
 
 export default function AIPlan() {
   const [recommendations] = useState<AIRecommendation[]>(

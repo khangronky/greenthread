@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { type AIExplanation, getAIExplanations } from '@/utils/mockData';
+import { type AIExplanation, getAIExplanations } from '@/data/mockData';
 
 export default function AIExplain() {
   const [explanations] = useState<AIExplanation[]>(getAIExplanations());
