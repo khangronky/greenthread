@@ -1,9 +1,4 @@
-import {
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-  ResponsiveContainer,
-} from 'recharts';
+import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts';
 
 interface SensorGaugeProps {
   value: number;
@@ -13,7 +8,6 @@ interface SensorGaugeProps {
   thresholdMax?: number;
   unit: string;
   name: string;
-  nameVi: string;
 }
 
 export default function SensorGauge({
@@ -24,7 +18,6 @@ export default function SensorGauge({
   thresholdMax,
   unit,
   name,
-  nameVi,
 }: SensorGaugeProps) {
   // Calculate percentage for the gauge (0-100)
   const percentage = ((value - min) / (max - min)) * 100;
@@ -102,7 +95,6 @@ export default function SensorGauge({
       {/* Sensor name */}
       <div className="mt-2 text-center">
         <div className="font-medium text-sm">{name}</div>
-        <div className="text-muted-foreground text-xs">{nameVi}</div>
       </div>
     </div>
   );

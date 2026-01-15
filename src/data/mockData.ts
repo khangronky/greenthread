@@ -3,7 +3,6 @@
 export interface SensorReading {
   id: string;
   name: string;
-  nameVi: string;
   value: number;
   unit: string;
   threshold: {
@@ -65,7 +64,6 @@ export const getSensorReadings = (): SensorReading[] => {
     {
       id: 'ph',
       name: 'pH Level',
-      nameVi: 'Độ pH',
       value: 7.2,
       unit: '',
       threshold: { min: 5.5, max: 8.5, label: '5.5 - 8.5' },
@@ -75,7 +73,6 @@ export const getSensorReadings = (): SensorReading[] => {
     {
       id: 'dissolvedOxygen',
       name: 'Dissolved Oxygen',
-      nameVi: 'Oxy Hòa Tan',
       value: 6.5,
       unit: 'mg/L',
       threshold: { min: 5, label: '≥ 5 mg/L' },
@@ -85,7 +82,6 @@ export const getSensorReadings = (): SensorReading[] => {
     {
       id: 'turbidity',
       name: 'Turbidity',
-      nameVi: 'Độ Đục',
       value: 58,
       unit: 'NTU',
       threshold: { max: 50, label: '≤ 50 NTU' },
@@ -95,7 +91,6 @@ export const getSensorReadings = (): SensorReading[] => {
     {
       id: 'conductivity',
       name: 'Conductivity',
-      nameVi: 'Độ Dẫn Điện',
       value: 2100,
       unit: 'µS/cm',
       threshold: { max: 3000, label: '≤ 3000 µS/cm' },
@@ -105,7 +100,6 @@ export const getSensorReadings = (): SensorReading[] => {
     {
       id: 'flowRate',
       name: 'Flow Rate',
-      nameVi: 'Lưu Lượng',
       value: 75,
       unit: 'm³/h',
       threshold: { max: 100, label: '≤ 100 m³/h' },

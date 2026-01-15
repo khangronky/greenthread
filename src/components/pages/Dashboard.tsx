@@ -210,9 +210,7 @@ export default function Dashboard() {
                   key={sensor.id}
                   className="rounded border border-destructive/20 bg-destructive/10 p-3"
                 >
-                  <div className="font-semibold">
-                    {sensor.name} ({sensor.nameVi})
-                  </div>
+                  <div className="font-semibold">{sensor.name}</div>
                   <div className="text-sm">
                     Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
                     {sensor.threshold.label}
@@ -282,7 +280,6 @@ export default function Dashboard() {
                   thresholdMax={sensor.threshold.max}
                   unit={sensor.unit}
                   name={sensor.name}
-                  nameVi={sensor.nameVi}
                 />
                 <div className="mt-3 text-center text-muted-foreground text-xs">
                   Updated: {sensor.lastUpdated.toLocaleTimeString()}
