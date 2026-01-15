@@ -17,7 +17,7 @@ import { NavUser } from './nav-user';
 
 const navigation = [
   {
-    href: '/',
+    href: '/dashboard',
     name: 'Dashboard',
     icon: LayoutDashboard,
   },
