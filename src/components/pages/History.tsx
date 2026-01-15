@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import {
   Blocks,
   CheckCircle,
@@ -10,7 +11,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -30,7 +31,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getBlockchainTransactions, getHistoricalData } from '@/data/mockData';
+import { getBlockchainTransactions } from '@/data/mockData';
+import { fetcher } from '@/lib/api';
+
+// Fetch function for historical data from API
+const fetchHistoricalData = async (numDays: number) => {
+  const data = await fetcher<any[]>(`/data/history?num_days=${numDays}`);
+  // Convert timestamp strings to Date objects
+  return data.map((point) => ({
+    ...point,
+    timestamp: new Date(point.timestamp),
+  }));
+};
 
 export default function History() {
   const [selectedPeriod, setSelectedPeriod] = useState(7);
@@ -63,10 +75,18 @@ export default function History() {
     { id: 'flowRate', label: 'Flow Rate', color: '#ef4444', unit: 'm³/h' },
   ];
 
-  const historicalData = useMemo(
-    () => getHistoricalData(selectedPeriod),
-    [selectedPeriod]
-  );
+  const {
+    data: historicalData = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['historicalData', selectedPeriod],
+    queryFn: () => fetchHistoricalData(selectedPeriod),
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    staleTime: 30000, // Consider data stale after 30 seconds
+    retry: 3,
+  });
+
   const blockchainTransactions = getBlockchainTransactions();
 
   const toggleSensor = (sensorId: string) => {
@@ -82,22 +102,35 @@ export default function History() {
   };
 
   const calculateStats = (sensorId: string) => {
+    if (!historicalData || historicalData.length === 0) {
+      return {
+        min: 0,
+        max: 0,
+        avg: 0,
+        trend: 'stable' as const,
+        trendPercent: 0,
+      };
+    }
+
     const values = historicalData.map(
-      (d) => d[sensorId as keyof typeof d] as number
+      (d: any) => d[sensorId as keyof typeof d] as number
     );
     const min = Math.min(...values);
     const max = Math.max(...values);
-    const avg = values.reduce((a, b) => a + b, 0) / values.length;
+    const avg =
+      values.reduce((a: number, b: number) => a + b, 0) / values.length;
 
     // Calculate trend (last 20% vs first 20%)
     const recentAvg =
       values
         .slice(-Math.floor(values.length * 0.2))
-        .reduce((a, b) => a + b, 0) / Math.floor(values.length * 0.2);
+        .reduce((a: number, b: number) => a + b, 0) /
+      Math.floor(values.length * 0.2);
     const oldAvg =
       values
         .slice(0, Math.floor(values.length * 0.2))
-        .reduce((a, b) => a + b, 0) / Math.floor(values.length * 0.2);
+        .reduce((a: number, b: number) => a + b, 0) /
+      Math.floor(values.length * 0.2);
     const trendPercent = ((recentAvg - oldAvg) / oldAvg) * 100;
 
     let trend: 'improving' | 'stable' | 'degrading';
@@ -129,6 +162,34 @@ export default function History() {
         return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-primary border-b-2"></div>
+          <p className="text-muted-foreground">Loading historical data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Failed to Load Historical Data</CardTitle>
+            <CardDescription>
+              Unable to fetch historical sensor data. Please try again later.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

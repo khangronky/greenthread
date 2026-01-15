@@ -227,7 +227,7 @@ export default function AIPlan() {
                       key={idx}
                       className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-accent/50"
                     >
-                      <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-sm">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-sm">
                         {idx + 1}
                       </div>
                       <p className="pt-0.5 text-sm">{step}</p>

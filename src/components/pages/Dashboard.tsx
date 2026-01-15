@@ -44,11 +44,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  getAIRecommendations,
-  getHistoricalData,
-  type SensorReading,
-} from '@/data/mockData';
+import { getAIRecommendations, type SensorReading } from '@/data/mockData';
 import { fetcher } from '@/lib/api';
 
 // Fetch function for sensor readings from API
@@ -62,10 +58,20 @@ const fetchSensorData = async (): Promise<SensorReading[]> => {
   }));
 };
 
+// Fetch function for historical data from API
+const fetchHistoricalData = async (numDays: number) => {
+  const data = await fetcher<any[]>(`/data/history?num_days=${numDays}`);
+  // Convert timestamp strings to Date objects
+  return data.map((point) => ({
+    ...point,
+    timestamp: new Date(point.timestamp),
+  }));
+};
+
 export default function Dashboard() {
   const {
     data: sensors = [],
-    isLoading,
+    isLoading: isLoadingCurrent,
     isError,
     error,
     refetch,
@@ -77,12 +83,19 @@ export default function Dashboard() {
     retry: 3, // Retry failed requests 3 times
   });
 
-  const last24Hours = getHistoricalData(1);
+  const { data: last24Hours = [], isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['historicalData', 1],
+    queryFn: () => fetchHistoricalData(1),
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    staleTime: 30000, // Consider data stale after 30 seconds
+    retry: 3,
+  });
+
   const recommendations = getAIRecommendations();
   const lastUpdate = new Date();
 
   // Loading state
-  if (isLoading) {
+  if (isLoadingCurrent || isLoadingHistory) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -143,17 +156,27 @@ export default function Dashboard() {
 
   // Calculate daily trends
   const calculateTrend = (sensorId: string) => {
+    if (!last24Hours || last24Hours.length < 2) {
+      return {
+        icon: <Minus className="h-4 w-4" />,
+        text: 'N/A',
+        color: 'text-muted-foreground',
+      };
+    }
+
     const recentData = last24Hours.slice(-12); // Last 12 hours
     const olderData = last24Hours.slice(0, 12); // First 12 hours
 
     const recentAvg =
       recentData.reduce(
-        (sum, d) => sum + (d[sensorId as keyof typeof d] as number),
+        (sum: number, d: any) =>
+          sum + (d[sensorId as keyof typeof d] as number),
         0
       ) / recentData.length;
     const olderAvg =
       olderData.reduce(
-        (sum, d) => sum + (d[sensorId as keyof typeof d] as number),
+        (sum: number, d: any) =>
+          sum + (d[sensorId as keyof typeof d] as number),
         0
       ) / olderData.length;
 
@@ -202,7 +225,7 @@ export default function Dashboard() {
   });
 
   // Scatter plot data (pH vs DO correlation)
-  const correlationData = last24Hours.map((d) => ({
+  const correlationData = last24Hours.map((d: any) => ({
     ph: d.ph,
     do: d.dissolvedOxygen,
   }));
@@ -301,9 +324,7 @@ export default function Dashboard() {
 
       {/* Section 2: Sensor Cards with Gauge Visualization */}
       <div>
-        <h2 className="mb-4 font-bold text-2xl">
-          🤖 AI-Powered Real-Time Sensor Monitoring
-        </h2>
+        <h2 className="mb-4 font-bold text-2xl">Real-Time Sensor Monitoring</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {sensors.map((sensor) => (
             <Card
