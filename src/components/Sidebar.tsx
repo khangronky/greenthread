@@ -6,71 +6,47 @@ import {
   History as HistoryIcon,
   LayoutDashboard,
   Lightbulb,
-  LogOut,
   Menu,
   X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@/lib/supabase/client';
+import { NavUser } from './nav-user';
 
 const navigation = [
   {
     href: '/',
     name: 'Dashboard',
-    nameVi: 'Bang Dieu Khien',
     icon: LayoutDashboard,
   },
   {
     href: '/ai-explain',
     name: 'AI Explain',
-    nameVi: 'Giai Thich AI',
     icon: Brain,
   },
   {
     href: '/ai-plan',
     name: 'AI Plan',
-    nameVi: 'Ke Hoach AI',
     icon: Lightbulb,
   },
   {
     href: '/history',
     name: 'History',
-    nameVi: 'Lich Su',
     icon: HistoryIcon,
   },
 ];
 
 export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-      const supabase = createClient();
-      await supabase.auth.signOut();
-      toast.success('Logged out successfully');
-      router.push('/login');
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to log out');
-    } finally {
-      setIsLoggingOut(false);
-    }
-  };
 
   return (
     <aside
       className={`${
         sidebarOpen ? 'w-64' : 'w-20'
-      } sticky top-0 flex h-screen flex-col border-r bg-card transition-all duration-300`}
+      } sticky top-0 flex h-screen flex-col overflow-hidden border-r bg-card transition-all duration-300`}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b p-4">
@@ -125,7 +101,6 @@ export default function Sidebar() {
               {sidebarOpen && (
                 <div className="flex-1 text-left">
                   <div className="font-medium text-sm">{item.name}</div>
-                  <div className="text-xs opacity-80">{item.nameVi}</div>
                 </div>
               )}
             </Link>
@@ -133,30 +108,13 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Logout Button */}
-      <div className="border-t p-2">
-        <Button
-          variant="ghost"
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className={`w-full justify-start text-muted-foreground hover:text-foreground ${
-            sidebarOpen ? 'px-3' : 'justify-center px-2'
-          }`}
-        >
-          <LogOut className={`h-5 w-5 ${sidebarOpen ? 'mr-3' : ''} shrink-0`} />
-          {sidebarOpen && (
-            <span className="text-sm">
-              {isLoggingOut ? 'Logging out...' : 'Logout'}
-            </span>
-          )}
-        </Button>
-      </div>
+      <NavUser sidebarOpen={sidebarOpen} />
 
       {/* Footer */}
       {sidebarOpen && (
         <div className="border-t p-4 text-center text-muted-foreground text-xs">
           <div>GreenThread MVP</div>
-          <div>RMITHAV 2025</div>
+          <div>RMIT Hack-A-Venture 2025</div>
         </div>
       )}
     </aside>
