@@ -315,7 +315,7 @@ export default function Dashboard() {
         <Alert className="border-2 border-primary bg-primary/5">
           <CheckCircle2 className="h-5 w-5 text-primary" />
           <AlertTitle className="font-bold text-lg text-primary">
-            ✓ All Parameters Within QCVN 40:2025 Limits
+            ✓ All Parameters Within Compliance Limits
           </AlertTitle>
           <AlertDescription>
             System operating normally. Last updated:{' '}
