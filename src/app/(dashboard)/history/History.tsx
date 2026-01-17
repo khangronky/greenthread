@@ -188,7 +188,7 @@ export default function History() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
+      <div className="space-y-2">
         <h1 className="flex items-center gap-2 font-bold text-3xl">
           <HistoryIcon className="h-8 w-8 text-primary" />
           Historical Data
@@ -255,95 +255,96 @@ export default function History() {
         </div>
       </div>
 
-      {/* Period Selection */}
+      {/* Trend Analysis Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Time Period</CardTitle>
-        </CardHeader>
-        <CardContent className="flex gap-2">
-          {periods.map((period) => (
-            <Button
-              key={period.value}
-              variant={selectedPeriod === period.value ? 'default' : 'outline'}
-              onClick={() => setSelectedPeriod(period.value)}
-            >
-              {period.label}
-            </Button>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Sensor Selection */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">
-              Select Sensors to Display
-            </CardTitle>
-            <Button variant="outline" size="sm">
-              <Download className="mr-2 h-4 w-4" />
-              Export Data
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl">Trend Analysis</CardTitle>
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Export Data
+              </Button>
+            </div>
+            <CardDescription>
+              Historical data for the last {selectedPeriod} days
+            </CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
-          {sensors.map((sensor) => (
-            <Button
-              key={sensor.id}
-              variant={
-                selectedSensors.includes(sensor.id) ? 'default' : 'outline'
-              }
-              size="sm"
-              onClick={() => toggleSensor(sensor.id)}
-            >
-              <div
-                className="mr-2 h-3 w-3 rounded-full"
-                style={{ backgroundColor: sensor.color }}
-              />
-              {sensor.label}
-            </Button>
-          ))}
-        </CardContent>
-      </Card>
+        <CardContent className="space-y-6">
+          {/* Period Selection */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-sm">Time Period</h3>
+            <div className="flex gap-2">
+              {periods.map((period) => (
+                <Button
+                  key={period.value}
+                  variant={
+                    selectedPeriod === period.value ? 'default' : 'outline'
+                  }
+                  onClick={() => setSelectedPeriod(period.value)}
+                >
+                  {period.label}
+                </Button>
+              ))}
+            </div>
+          </div>
 
-      {/* Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Trend Analysis</CardTitle>
-          <CardDescription>
-            Historical data for the last {selectedPeriod} days
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={historicalData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="timestamp"
-                tickFormatter={(date) => formatDate(new Date(date))}
-              />
-              <YAxis />
-              <Tooltip
-                labelFormatter={(date) => new Date(date).toLocaleString()}
-                formatter={(value: number) => value.toFixed(2)}
-              />
-              <Legend />
-              {selectedSensors.map((sensorId) => {
-                const sensor = sensors.find((s) => s.id === sensorId);
-                return sensor ? (
-                  <Line
-                    key={sensorId}
-                    type="monotone"
-                    dataKey={sensorId}
-                    stroke={sensor.color}
-                    name={sensor.label}
-                    dot={false}
-                    strokeWidth={2}
+          {/* Sensor Selection */}
+          <div className="space-y-3">
+            <h3 className="font-medium text-sm">Select Sensors to Display</h3>
+            <div className="flex flex-wrap gap-2">
+              {sensors.map((sensor) => (
+                <Button
+                  key={sensor.id}
+                  variant={
+                    selectedSensors.includes(sensor.id) ? 'default' : 'outline'
+                  }
+                  size="sm"
+                  onClick={() => toggleSensor(sensor.id)}
+                >
+                  <div
+                    className="mr-2 h-3 w-3 rounded-full"
+                    style={{ backgroundColor: sensor.color }}
                   />
-                ) : null;
-              })}
-            </LineChart>
-          </ResponsiveContainer>
+                  {sensor.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Chart */}
+          <div className="pt-4">
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={historicalData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="timestamp"
+                  tickFormatter={(date) => formatDate(new Date(date))}
+                />
+                <YAxis />
+                <Tooltip
+                  labelFormatter={(date) => new Date(date).toLocaleString()}
+                  formatter={(value: number) => value.toFixed(2)}
+                />
+                <Legend />
+                {selectedSensors.map((sensorId) => {
+                  const sensor = sensors.find((s) => s.id === sensorId);
+                  return sensor ? (
+                    <Line
+                      key={sensorId}
+                      type="monotone"
+                      dataKey={sensorId}
+                      stroke={sensor.color}
+                      name={sensor.label}
+                      dot={false}
+                      strokeWidth={2}
+                    />
+                  ) : null;
+                })}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
     </div>
