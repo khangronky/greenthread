@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import {
   Activity,
   AlertTriangle,
@@ -16,6 +17,7 @@ import {
   Waves,
   Wind,
 } from 'lucide-react';
+import Link from 'next/link';
 import {
   CartesianGrid,
   Cell,
@@ -42,17 +44,92 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  getAIRecommendations,
-  getHistoricalData,
-  getSensorReadings,
-} from '@/data/mockData';
+import { getAIRecommendations, type SensorReading } from '@/data/mockData';
+import { fetcher } from '@/lib/api';
+
+// Fetch function for sensor readings from API
+const fetchSensorData = async (): Promise<SensorReading[]> => {
+  const data = await fetcher<SensorReading[]>('/data/current');
+
+  // Convert lastUpdated strings to Date objects
+  return data.map((sensor) => ({
+    ...sensor,
+    lastUpdated: new Date(sensor.lastUpdated),
+  }));
+};
+
+// Fetch function for historical data from API
+const fetchHistoricalData = async (numDays: number) => {
+  const data = await fetcher<any[]>(`/data/history?num_days=${numDays}`);
+  // Convert timestamp strings to Date objects
+  return data.map((point) => ({
+    ...point,
+    timestamp: new Date(point.timestamp),
+  }));
+};
 
 export default function Dashboard() {
-  const sensors = getSensorReadings();
-  const last24Hours = getHistoricalData(1);
+  const {
+    data: sensors = [],
+    isLoading: isLoadingCurrent,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['sensorReadings'],
+    queryFn: fetchSensorData,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    staleTime: 20000, // Consider data stale after 20 seconds
+    retry: 3, // Retry failed requests 3 times
+  });
+
+  const { data: last24Hours = [], isLoading: isLoadingHistory } = useQuery({
+    queryKey: ['historicalData', 1],
+    queryFn: () => fetchHistoricalData(1),
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    staleTime: 30000, // Consider data stale after 30 seconds
+    retry: 3,
+  });
+
   const recommendations = getAIRecommendations();
   const lastUpdate = new Date();
+
+  // Loading state
+  if (isLoadingCurrent || isLoadingHistory) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-primary border-b-2"></div>
+          <p className="text-muted-foreground">Loading sensor data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertTriangle className="h-5 w-5" />
+          <AlertTitle>Failed to Load Sensor Data</AlertTitle>
+          <AlertDescription className="mt-2">
+            <p>
+              {error instanceof Error ? error.message : 'An error occurred'}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="mt-4"
+            >
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const violations = sensors.filter((s) => s.status === 'violation');
   const complianceRate = (
@@ -79,17 +156,27 @@ export default function Dashboard() {
 
   // Calculate daily trends
   const calculateTrend = (sensorId: string) => {
+    if (!last24Hours || last24Hours.length < 2) {
+      return {
+        icon: <Minus className="h-4 w-4" />,
+        text: 'N/A',
+        color: 'text-muted-foreground',
+      };
+    }
+
     const recentData = last24Hours.slice(-12); // Last 12 hours
     const olderData = last24Hours.slice(0, 12); // First 12 hours
 
     const recentAvg =
       recentData.reduce(
-        (sum, d) => sum + (d[sensorId as keyof typeof d] as number),
+        (sum: number, d: any) =>
+          sum + (d[sensorId as keyof typeof d] as number),
         0
       ) / recentData.length;
     const olderAvg =
       olderData.reduce(
-        (sum, d) => sum + (d[sensorId as keyof typeof d] as number),
+        (sum: number, d: any) =>
+          sum + (d[sensorId as keyof typeof d] as number),
         0
       ) / olderData.length;
 
@@ -138,7 +225,7 @@ export default function Dashboard() {
   });
 
   // Scatter plot data (pH vs DO correlation)
-  const correlationData = last24Hours.map((d) => ({
+  const correlationData = last24Hours.map((d: any) => ({
     ph: d.ph,
     do: d.dissolvedOxygen,
   }));
@@ -151,7 +238,7 @@ export default function Dashboard() {
       {/* CyberSecurity & System Status Banner */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card className="border-primary/50 bg-primary/5">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-primary/20 p-3">
                 <Shield className="h-6 w-6 text-primary" />
@@ -173,7 +260,7 @@ export default function Dashboard() {
         </Card>
 
         <Card className="border-green-500/50 bg-green-500/5">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex items-center gap-3">
               <div className="rounded-full bg-green-500/20 p-3">
                 <Lock className="h-6 w-6 text-green-600" />
@@ -205,18 +292,20 @@ export default function Dashboard() {
           </AlertTitle>
           <AlertDescription className="mt-2">
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-              {violations.map((sensor) => (
-                <div
-                  key={sensor.id}
-                  className="rounded border border-destructive/20 bg-destructive/10 p-3"
-                >
-                  <div className="font-semibold">{sensor.name}</div>
-                  <div className="text-sm">
-                    Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
-                    {sensor.threshold.label}
+              {violations.map((sensor) => {
+                return (
+                  <div
+                    key={sensor.id}
+                    className="rounded border border-destructive/20 bg-destructive/10 p-3"
+                  >
+                    <div className="font-semibold">{sensor.name}</div>
+                    <div className="text-sm">
+                      Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
+                      {sensor.threshold.label} {sensor.unit}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </AlertDescription>
         </Alert>
@@ -237,9 +326,7 @@ export default function Dashboard() {
 
       {/* Section 2: Sensor Cards with Gauge Visualization */}
       <div>
-        <h2 className="mb-4 font-bold text-2xl">
-          🤖 AI-Powered Real-Time Sensor Monitoring
-        </h2>
+        <h2 className="mb-4 font-bold text-2xl">Real-Time Sensor Monitoring</h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {sensors.map((sensor) => (
             <Card
@@ -262,27 +349,9 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <SensorGauge
-                  value={sensor.value}
-                  min={sensor.id === 'ph' ? 4 : 0}
-                  max={
-                    sensor.id === 'ph'
-                      ? 11
-                      : sensor.id === 'dissolvedOxygen'
-                        ? 15
-                        : sensor.id === 'turbidity'
-                          ? 100
-                          : sensor.id === 'conductivity'
-                            ? 5000
-                            : 150
-                  }
-                  thresholdMin={sensor.threshold.min}
-                  thresholdMax={sensor.threshold.max}
-                  unit={sensor.unit}
-                  name={sensor.name}
-                />
+                <SensorGauge sensor={sensor} />
                 <div className="mt-3 text-center text-muted-foreground text-xs">
-                  Updated: {sensor.lastUpdated.toLocaleTimeString()}
+                  Updated: {sensor.lastUpdated.toLocaleString()}
                 </div>
               </CardContent>
             </Card>
@@ -322,7 +391,7 @@ export default function Dashboard() {
                 {sensors.length - violations.length}
               </div>
               <p className="mt-1 text-muted-foreground text-xs">
-                Within QCVN limits
+                Within Compliance Limits
               </p>
             </CardContent>
           </Card>
@@ -560,6 +629,22 @@ export default function Dashboard() {
                     dot={false}
                     strokeWidth={2}
                   />
+                  <Line
+                    type="monotone"
+                    dataKey="conductivity"
+                    stroke="#f59e0b"
+                    name="Conductivity"
+                    dot={false}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="flowRate"
+                    stroke="#ef4444"
+                    name="Flow Rate"
+                    dot={false}
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
@@ -631,9 +716,11 @@ export default function Dashboard() {
                   Critical metrics requiring immediate attention
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
-                View All Plans
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/ai-plan">
+                  View All Plans
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </CardHeader>

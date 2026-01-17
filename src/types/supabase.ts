@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      sensor_data: {
+        Row: {
+          created_at: string;
+          id: string;
+          recorded_at: string;
+          type: Database['public']['Enums']['sensor_type'];
+          unit: string;
+          value: number;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          recorded_at: string;
+          type: Database['public']['Enums']['sensor_type'];
+          unit: string;
+          value: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          recorded_at?: string;
+          type?: Database['public']['Enums']['sensor_type'];
+          unit?: string;
+          value?: number;
+        };
+        Relationships: [];
+      };
       users: {
         Row: {
           created_at: string;
@@ -41,7 +68,12 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      [_ in never]: never;
+      sensor_type:
+        | 'ph'
+        | 'dissolved_oxygen'
+        | 'turbidity'
+        | 'conductivity'
+        | 'flow_rate';
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -171,6 +203,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      sensor_type: [
+        'ph',
+        'dissolved_oxygen',
+        'turbidity',
+        'conductivity',
+        'flow_rate',
+      ],
+    },
   },
 } as const;

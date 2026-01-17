@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Blocks,
   Brain,
   Droplets,
   History as HistoryIcon,
@@ -35,6 +36,11 @@ const navigation = [
     href: '/history',
     name: 'History',
     icon: HistoryIcon,
+  },
+  {
+    href: '/audit-trail',
+    name: 'Audit Trail',
+    icon: Blocks,
   },
 ];
 

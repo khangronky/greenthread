@@ -1,31 +1,19 @@
 import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts';
+import type { SensorReading } from '@/data/mockData';
 
 interface SensorGaugeProps {
-  value: number;
-  min: number;
-  max: number;
-  thresholdMin?: number;
-  thresholdMax?: number;
-  unit: string;
-  name: string;
+  sensor: SensorReading;
 }
 
-export default function SensorGauge({
-  value,
-  min,
-  max,
-  thresholdMin,
-  thresholdMax,
-  unit,
-  name,
-}: SensorGaugeProps) {
+export default function SensorGauge({ sensor }: SensorGaugeProps) {
   // Calculate percentage for the gauge (0-100)
-  const percentage = ((value - min) / (max - min)) * 100;
+  const percentage =
+    ((sensor.value - sensor.ranges.min) /
+      (sensor.ranges.max - sensor.ranges.min)) *
+    100;
 
   // Determine compliance status
-  const isCompliant =
-    (thresholdMin === undefined || value >= thresholdMin) &&
-    (thresholdMax === undefined || value <= thresholdMax);
+  const isCompliant = sensor.status === 'compliant';
 
   const data = [
     {
@@ -65,36 +53,24 @@ export default function SensorGauge({
         </RadialBarChart>
 
         {/* Center value display */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center pt-8">
-          <div className="font-bold text-3xl">{value.toFixed(1)}</div>
-          <div className="text-muted-foreground text-sm">{unit}</div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-10">
+          <div className="font-bold text-2xl">{sensor.value.toFixed(1)}</div>
+          <div className="text-muted-foreground text-sm">{sensor.unit}</div>
         </div>
       </div>
 
       {/* Threshold labels */}
       <div className="mt-2 flex w-full justify-between px-2 text-muted-foreground text-xs">
-        <span>{min.toFixed(0)}</span>
-        {thresholdMin && thresholdMax && (
-          <span className="font-medium text-primary">
-            {thresholdMin.toFixed(1)}-{thresholdMax.toFixed(1)}
-          </span>
-        )}
-        {thresholdMin && !thresholdMax && (
-          <span className="font-medium text-primary">
-            ≥{thresholdMin.toFixed(1)}
-          </span>
-        )}
-        {!thresholdMin && thresholdMax && (
-          <span className="font-medium text-primary">
-            ≤{thresholdMax.toFixed(1)}
-          </span>
-        )}
-        <span>{max.toFixed(0)}</span>
+        <span>{sensor.ranges.min.toFixed(0)}</span>
+        <span className="font-medium text-primary">
+          {sensor.threshold.label}
+        </span>
+        <span>{sensor.ranges.max.toFixed(0)}</span>
       </div>
 
       {/* Sensor name */}
       <div className="mt-2 text-center">
-        <div className="font-medium text-sm">{name}</div>
+        <div className="font-medium text-sm">{sensor.name}</div>
       </div>
     </div>
   );

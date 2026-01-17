@@ -1,0 +1,105 @@
+'use client';
+
+import { Badge } from '@/components/ui/badge';
+
+// Define the sensor data type matching the database schema
+export type SensorDataRow = {
+  id: string;
+  type: 'ph' | 'dissolved_oxygen' | 'turbidity' | 'conductivity' | 'flow_rate';
+  value: number;
+  unit: string;
+  recorded_at: string;
+  status: 'compliant' | 'violation';
+};
+
+// Simple column configuration without TanStack Table
+export type TableColumn = {
+  key: keyof SensorDataRow | 'actions';
+  label: string;
+  sortable: boolean;
+  render?: (row: SensorDataRow) => React.ReactNode;
+};
+
+// Sensor type display mappings
+const sensorTypeLabels: Record<SensorDataRow['type'], string> = {
+  ph: 'pH Level',
+  dissolved_oxygen: 'Dissolved Oxygen',
+  turbidity: 'Turbidity',
+  conductivity: 'Conductivity',
+  flow_rate: 'Flow Rate',
+};
+
+// Sensor type badge colors
+const sensorTypeBadgeVariants: Record<
+  SensorDataRow['type'],
+  'default' | 'secondary' | 'outline'
+> = {
+  ph: 'default',
+  dissolved_oxygen: 'default',
+  turbidity: 'secondary',
+  conductivity: 'secondary',
+  flow_rate: 'outline',
+};
+
+// Simple column definitions
+export const tableColumns: TableColumn[] = [
+  {
+    key: 'recorded_at',
+    label: 'Timestamp',
+    sortable: true,
+    render: (row) => {
+      const date = new Date(row.recorded_at);
+      return (
+        <div className="font-medium">
+          <div>{date.toLocaleDateString('en-GB')}</div>
+          <div className="text-muted-foreground text-xs">
+            {date.toLocaleTimeString('en-GB')}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    key: 'type',
+    label: 'Sensor Type',
+    sortable: true,
+    render: (row) => {
+      return (
+        <Badge variant={sensorTypeBadgeVariants[row.type]}>
+          {sensorTypeLabels[row.type]}
+        </Badge>
+      );
+    },
+  },
+  {
+    key: 'value',
+    label: 'Value',
+    sortable: true,
+    render: (row) => {
+      return <div className="font-semibold">{row.value.toFixed(2)}</div>;
+    },
+  },
+  {
+    key: 'unit',
+    label: 'Unit',
+    sortable: false,
+    render: (row) => {
+      return <div className="text-muted-foreground">{row.unit || '—'}</div>;
+    },
+  },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    render: (row) => {
+      return (
+        <Badge
+          variant={row.status === 'compliant' ? 'default' : 'destructive'}
+          className="font-medium"
+        >
+          {row.status === 'compliant' ? 'Compliant' : 'Violation'}
+        </Badge>
+      );
+    },
+  },
+];

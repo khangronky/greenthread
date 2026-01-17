@@ -1,4 +1,4 @@
-import AIExplain from '@/components/pages/AIExplain';
+import AIExplain from './AIExplain';
 
 export default function AIExplainPage() {
   return <AIExplain />;
