@@ -44,39 +44,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { SENSOR_CONFIG } from '@/constants/config';
 import { getAIRecommendations, type SensorReading } from '@/data/mockData';
 import { fetcher } from '@/lib/api';
 
-interface ExtendedSensorReading extends SensorReading {
-  threshold: { min?: number; max?: number };
-  ranges: { min: number; max: number };
-  status: 'compliant' | 'violation';
-}
-
 // Fetch function for sensor readings from API
-const fetchSensorData = async (): Promise<ExtendedSensorReading[]> => {
+const fetchSensorData = async (): Promise<SensorReading[]> => {
   const data = await fetcher<SensorReading[]>('/data/current');
 
   // Convert lastUpdated strings to Date objects
-  return data.map((sensor) => {
-    const threshold =
-      SENSOR_CONFIG[sensor.id as keyof typeof SENSOR_CONFIG].threshold;
-
-    const status =
-      (threshold.min === undefined || sensor.value >= threshold.min) &&
-      (threshold.max === undefined || sensor.value <= threshold.max)
-        ? 'compliant'
-        : 'violation';
-
-    return {
-      ...sensor,
-      threshold,
-      ranges: SENSOR_CONFIG[sensor.id as keyof typeof SENSOR_CONFIG].ranges,
-      status,
-      lastUpdated: new Date(sensor.lastUpdated),
-    };
-  });
+  return data.map((sensor) => ({
+    ...sensor,
+    lastUpdated: new Date(sensor.lastUpdated),
+  }));
 };
 
 // Fetch function for historical data from API
@@ -383,15 +362,7 @@ export default function Dashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <SensorGauge
-                  value={sensor.value}
-                  min={sensor.ranges.min}
-                  max={sensor.ranges.max}
-                  thresholdMin={sensor.threshold.min}
-                  thresholdMax={sensor.threshold.max}
-                  unit={sensor.unit}
-                  name={sensor.name}
-                />
+                <SensorGauge sensor={sensor} />
                 <div className="mt-3 text-center text-muted-foreground text-xs">
                   Updated: {sensor.lastUpdated.toLocaleString()}
                 </div>

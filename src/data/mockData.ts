@@ -5,6 +5,9 @@ export interface SensorReading {
   name: string;
   value: number;
   unit: string;
+  threshold: { min?: number; max?: number; label: string };
+  ranges: { min: number; max: number };
+  status: 'compliant' | 'violation';
   lastUpdated: Date;
 }
 
@@ -60,6 +63,9 @@ export const getSensorReadings = (): SensorReading[] => {
       name: 'pH Level',
       value: 7.2,
       unit: '',
+      threshold: { min: 6.5, max: 8.5, label: '6.5 - 8.5' },
+      ranges: { min: 0, max: 14 },
+      status: 'compliant',
       lastUpdated: now,
     },
     {
@@ -67,6 +73,9 @@ export const getSensorReadings = (): SensorReading[] => {
       name: 'Dissolved Oxygen',
       value: 6.5,
       unit: 'mg/L',
+      threshold: { min: 5, max: 8, label: '5 - 8' },
+      ranges: { min: 0, max: 14 },
+      status: 'compliant',
       lastUpdated: now,
     },
     {
@@ -74,6 +83,9 @@ export const getSensorReadings = (): SensorReading[] => {
       name: 'Turbidity',
       value: 58,
       unit: 'NTU',
+      threshold: { max: 50, label: '<= 50' },
+      ranges: { min: 0, max: 100 },
+      status: 'violation',
       lastUpdated: now,
     },
     {
@@ -81,6 +93,9 @@ export const getSensorReadings = (): SensorReading[] => {
       name: 'Conductivity',
       value: 2100,
       unit: 'µS/cm',
+      threshold: { max: 2500, label: '<= 2500' },
+      ranges: { min: 0, max: 5000 },
+      status: 'compliant',
       lastUpdated: now,
     },
     {
@@ -88,6 +103,9 @@ export const getSensorReadings = (): SensorReading[] => {
       name: 'Flow Rate',
       value: 75,
       unit: 'm³/h',
+      threshold: { max: 90, label: '<= 90' },
+      ranges: { min: 0, max: 150 },
+      status: 'compliant',
       lastUpdated: now,
     },
   ];
