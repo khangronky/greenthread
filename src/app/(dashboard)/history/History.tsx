@@ -29,6 +29,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { fetcher } from '@/lib/api';
+import { SensorHistoryTable } from './components/sensor-history-table';
 
 // Fetch function for historical data from API
 const fetchHistoricalData = async (numDays: number) => {
@@ -347,6 +348,9 @@ export default function History() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Sensor Data History Table */}
+      <SensorHistoryTable />
     </div>
   );
 }

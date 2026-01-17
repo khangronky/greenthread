@@ -293,19 +293,6 @@ export default function Dashboard() {
           <AlertDescription className="mt-2">
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
               {violations.map((sensor) => {
-                let thresholdLabel = 'N/A';
-
-                if (
-                  sensor.threshold.min != null &&
-                  sensor.threshold.max != null
-                ) {
-                  thresholdLabel = `${sensor.threshold.min.toFixed(1)} - ${sensor.threshold.max.toFixed(1)} ${sensor.unit}`;
-                } else if (sensor.threshold.min != null) {
-                  thresholdLabel = `≥ ${sensor.threshold.min.toFixed(1)} ${sensor.unit}`;
-                } else if (sensor.threshold.max != null) {
-                  thresholdLabel = `≤ ${sensor.threshold.max.toFixed(1)} ${sensor.unit}`;
-                }
-
                 return (
                   <div
                     key={sensor.id}
@@ -314,7 +301,7 @@ export default function Dashboard() {
                     <div className="font-semibold">{sensor.name}</div>
                     <div className="text-sm">
                       Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
-                      {thresholdLabel}
+                      {sensor.threshold.label} {sensor.unit}
                     </div>
                   </div>
                 );
