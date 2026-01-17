@@ -1,4 +1,4 @@
-import Dashboard from '@/components/pages/Dashboard';
+import Dashboard from './Dashboard';
 
 export default function DashboardPage() {
   return <Dashboard />;

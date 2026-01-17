@@ -43,7 +43,7 @@ export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
       <DropdownMenuTrigger asChild>
         <Button
           size="lg"
-          className="bg-background text-accent-foreground hover:bg-accent"
+          className="h-fit border-t bg-background py-2.5 text-accent-foreground hover:bg-accent"
         >
           <Avatar className="h-8 w-8 rounded-lg">
             <AvatarFallback className="rounded-lg bg-sidebar-primary! text-sidebar-primary-foreground">

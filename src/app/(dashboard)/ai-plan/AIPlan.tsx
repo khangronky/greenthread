@@ -78,7 +78,8 @@ export default function AIPlan() {
       {/* Header */}
       <div>
         <h1 className="flex items-center gap-2 font-bold text-3xl">
-          <Lightbulb className="h-8 w-8 text-primary" />🤖 AI Plan
+          <Lightbulb className="h-8 w-8 text-primary" />
+          AI Plan
         </h1>
         <p className="text-muted-foreground">
           AI-generated corrective action recommendations for optimal compliance

@@ -63,7 +63,7 @@ export default function AIExplain() {
       {/* Header */}
       <div>
         <h1 className="flex items-center gap-2 font-bold text-3xl">
-          <Brain className="h-8 w-8 text-primary" />🤖 AI Explain
+          <Brain className="h-8 w-8 text-primary" /> AI Explain
         </h1>
         <p className="text-muted-foreground">
           AI-powered causal factor analysis for sensor parameter changes

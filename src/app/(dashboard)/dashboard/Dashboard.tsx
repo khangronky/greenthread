@@ -367,7 +367,7 @@ export default function Dashboard() {
                   name={sensor.name}
                 />
                 <div className="mt-3 text-center text-muted-foreground text-xs">
-                  Updated: {sensor.lastUpdated.toLocaleTimeString()}
+                  Updated: {sensor.lastUpdated.toLocaleString()}
                 </div>
               </CardContent>
             </Card>
