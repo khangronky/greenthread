@@ -27,6 +27,16 @@ export default function SensorGauge({
     (thresholdMin === undefined || value >= thresholdMin) &&
     (thresholdMax === undefined || value <= thresholdMax);
 
+  let thresholdLabel = 'N/A';
+
+  if (thresholdMin != null && thresholdMax != null) {
+    thresholdLabel = `${thresholdMin.toFixed(1)} - ${thresholdMax.toFixed(1)}`;
+  } else if (thresholdMin != null) {
+    thresholdLabel = `≥ ${thresholdMin.toFixed(1)}`;
+  } else if (thresholdMax != null) {
+    thresholdLabel = `≤ ${thresholdMax.toFixed(1)}`;
+  }
+
   const data = [
     {
       name: 'value',
@@ -74,21 +84,7 @@ export default function SensorGauge({
       {/* Threshold labels */}
       <div className="mt-2 flex w-full justify-between px-2 text-muted-foreground text-xs">
         <span>{min.toFixed(0)}</span>
-        {thresholdMin && thresholdMax && (
-          <span className="font-medium text-primary">
-            {thresholdMin.toFixed(1)}-{thresholdMax.toFixed(1)}
-          </span>
-        )}
-        {thresholdMin && !thresholdMax && (
-          <span className="font-medium text-primary">
-            ≥{thresholdMin.toFixed(1)}
-          </span>
-        )}
-        {!thresholdMin && thresholdMax && (
-          <span className="font-medium text-primary">
-            ≤{thresholdMax.toFixed(1)}
-          </span>
-        )}
+        <span className="font-medium text-primary">{thresholdLabel}</span>
         <span>{max.toFixed(0)}</span>
       </div>
 

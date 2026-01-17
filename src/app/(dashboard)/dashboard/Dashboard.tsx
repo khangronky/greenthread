@@ -44,18 +44,39 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { SENSOR_CONFIG } from '@/constants/config';
 import { getAIRecommendations, type SensorReading } from '@/data/mockData';
 import { fetcher } from '@/lib/api';
 
+interface ExtendedSensorReading extends SensorReading {
+  threshold: { min?: number; max?: number };
+  ranges: { min: number; max: number };
+  status: 'compliant' | 'violation';
+}
+
 // Fetch function for sensor readings from API
-const fetchSensorData = async (): Promise<SensorReading[]> => {
+const fetchSensorData = async (): Promise<ExtendedSensorReading[]> => {
   const data = await fetcher<SensorReading[]>('/data/current');
 
   // Convert lastUpdated strings to Date objects
-  return data.map((sensor) => ({
-    ...sensor,
-    lastUpdated: new Date(sensor.lastUpdated),
-  }));
+  return data.map((sensor) => {
+    const threshold =
+      SENSOR_CONFIG[sensor.id as keyof typeof SENSOR_CONFIG].threshold;
+
+    const status =
+      (threshold.min === undefined || sensor.value >= threshold.min) &&
+      (threshold.max === undefined || sensor.value <= threshold.max)
+        ? 'compliant'
+        : 'violation';
+
+    return {
+      ...sensor,
+      threshold,
+      ranges: SENSOR_CONFIG[sensor.id as keyof typeof SENSOR_CONFIG].ranges,
+      status,
+      lastUpdated: new Date(sensor.lastUpdated),
+    };
+  });
 };
 
 // Fetch function for historical data from API
@@ -292,18 +313,33 @@ export default function Dashboard() {
           </AlertTitle>
           <AlertDescription className="mt-2">
             <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
-              {violations.map((sensor) => (
-                <div
-                  key={sensor.id}
-                  className="rounded border border-destructive/20 bg-destructive/10 p-3"
-                >
-                  <div className="font-semibold">{sensor.name}</div>
-                  <div className="text-sm">
-                    Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
-                    {sensor.threshold.label}
+              {violations.map((sensor) => {
+                let thresholdLabel = 'N/A';
+
+                if (
+                  sensor.threshold.min != null &&
+                  sensor.threshold.max != null
+                ) {
+                  thresholdLabel = `${sensor.threshold.min.toFixed(1)} - ${sensor.threshold.max.toFixed(1)} ${sensor.unit}`;
+                } else if (sensor.threshold.min != null) {
+                  thresholdLabel = `≥ ${sensor.threshold.min.toFixed(1)} ${sensor.unit}`;
+                } else if (sensor.threshold.max != null) {
+                  thresholdLabel = `≤ ${sensor.threshold.max.toFixed(1)} ${sensor.unit}`;
+                }
+
+                return (
+                  <div
+                    key={sensor.id}
+                    className="rounded border border-destructive/20 bg-destructive/10 p-3"
+                  >
+                    <div className="font-semibold">{sensor.name}</div>
+                    <div className="text-sm">
+                      Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
+                      {thresholdLabel}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </AlertDescription>
         </Alert>
@@ -349,18 +385,8 @@ export default function Dashboard() {
               <CardContent>
                 <SensorGauge
                   value={sensor.value}
-                  min={sensor.id === 'ph' ? 4 : 0}
-                  max={
-                    sensor.id === 'ph'
-                      ? 11
-                      : sensor.id === 'dissolvedOxygen'
-                        ? 15
-                        : sensor.id === 'turbidity'
-                          ? 100
-                          : sensor.id === 'conductivity'
-                            ? 5000
-                            : 150
-                  }
+                  min={sensor.ranges.min}
+                  max={sensor.ranges.max}
                   thresholdMin={sensor.threshold.min}
                   thresholdMax={sensor.threshold.max}
                   unit={sensor.unit}
