@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import type { SensorType } from '@/constants/config';
 import { SENSOR_CONFIG } from '@/constants/config';
 import { createClient } from '@/lib/supabase/server';
+import type { SensorType } from '@/types';
 import { calculateStatus } from '@/utils/sensor-data-helper';
 
 export async function GET(request: NextRequest) {

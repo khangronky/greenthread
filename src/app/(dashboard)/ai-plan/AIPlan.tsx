@@ -17,11 +17,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  type AIRecommendation,
-  getAIRecommendations,
-  getSensorReadings,
-} from '@/data/mockData';
+import { getAIRecommendations, getSensorReadings } from '@/data/mockData';
+import type { AIRecommendation } from '@/types';
 
 export default function AIPlan() {
   const [recommendations] = useState<AIRecommendation[]>(

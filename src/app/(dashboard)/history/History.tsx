@@ -70,6 +70,7 @@ export default function History() {
       unit: 'µS/cm',
     },
     { id: 'flowRate', label: 'Flow Rate', color: '#ef4444', unit: 'm³/h' },
+    { id: 'tds', label: 'TDS', color: '#14b8a6', unit: 'ppm' },
   ];
 
   const {

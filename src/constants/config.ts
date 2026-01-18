@@ -1,9 +1,4 @@
-export type SensorType =
-  | 'ph'
-  | 'dissolvedOxygen'
-  | 'turbidity'
-  | 'conductivity'
-  | 'flowRate';
+import type { SensorType } from '@/types';
 
 export const SENSOR_CONFIG: Record<
   SensorType,
@@ -55,5 +50,12 @@ export const SENSOR_CONFIG: Record<
     unit: 'm³/h',
     threshold: { max: 100 },
     ranges: { min: 0, max: 150 },
+  },
+  tds: {
+    id: 'tds',
+    name: 'Total Dissolved Solids',
+    unit: 'ppm',
+    threshold: { max: 500 },
+    ranges: { min: 0, max: 1000 },
   },
 };

@@ -1,57 +1,12 @@
 // Static mock data for textile wastewater monitoring system
 
-export interface SensorReading {
-  id: string;
-  name: string;
-  value: number;
-  unit: string;
-  threshold: { min?: number; max?: number; label: string };
-  ranges: { min: number; max: number };
-  status: 'compliant' | 'violation';
-  lastUpdated: Date;
-}
-
-export interface HistoricalDataPoint {
-  timestamp: Date;
-  ph: number;
-  dissolvedOxygen: number;
-  turbidity: number;
-  conductivity: number;
-  flowRate: number;
-}
-
-export interface AIExplanation {
-  id: string;
-  sensor: string;
-  timestamp: Date;
-  value: number;
-  status: 'normal' | 'anomaly';
-  factors: {
-    factor: string;
-    impact: 'high' | 'medium' | 'low';
-    description: string;
-  }[];
-}
-
-export interface AIRecommendation {
-  id: string;
-  sensor: string;
-  priority: 'critical' | 'high' | 'medium' | 'low';
-  issue: string;
-  recommendation: string;
-  steps: string[];
-  estimatedImpact: string;
-}
-
-export interface BlockchainTransaction {
-  id: string;
-  timestamp: Date;
-  type: 'sensor_reading' | 'compliance_report' | 'alert' | 'action_taken';
-  dataHash: string;
-  blockNumber: number;
-  status: 'confirmed' | 'pending';
-  description: string;
-}
+import type {
+  AIExplanation,
+  AIRecommendation,
+  BlockchainTransaction,
+  HistoricalDataPoint,
+  SensorReading,
+} from '@/types';
 
 // Static sensor readings (demonstrating mix of compliant and non-compliant states)
 export const getSensorReadings = (): SensorReading[] => {
@@ -126,7 +81,7 @@ export const getHistoricalData = (days: number): HistoricalDataPoint[] => {
     const dailyCycle = Math.sin((hourOfDay / 24) * Math.PI * 2) * 0.2;
 
     data.push({
-      timestamp,
+      timestamp: timestamp.toISOString(),
       ph: 7.2 + dayOffset + dailyCycle + (Math.random() - 0.5) * 0.3,
       dissolvedOxygen:
         6.5 + dayOffset * 2 - dailyCycle + (Math.random() - 0.5) * 0.8,
@@ -136,6 +91,8 @@ export const getHistoricalData = (days: number): HistoricalDataPoint[] => {
         2100 + dayOffset * 200 + dailyCycle * 100 + (Math.random() - 0.5) * 150,
       flowRate:
         75 + dayOffset * 15 - dailyCycle * 10 + (Math.random() - 0.5) * 8,
+      tds:
+        1200 + dayOffset * 100 + dailyCycle * 50 + (Math.random() - 0.5) * 60,
     });
   }
 

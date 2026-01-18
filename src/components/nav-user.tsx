@@ -27,7 +27,6 @@ export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
   const supabase = createClient();
 
   const { data: user, isLoading } = useCurrentUser();
-  console.log('Current user:', user);
   const openSettingsDialog = useSettingsDialogStore(
     (state) => state.openDialog
   );

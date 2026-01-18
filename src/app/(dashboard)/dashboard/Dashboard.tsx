@@ -44,8 +44,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { getAIRecommendations, type SensorReading } from '@/data/mockData';
+import { getAIRecommendations } from '@/data/mockData';
 import { fetcher } from '@/lib/api';
+import type { SensorReading } from '@/types';
 
 // Fetch function for sensor readings from API
 const fetchSensorData = async (): Promise<SensorReading[]> => {
@@ -54,7 +55,7 @@ const fetchSensorData = async (): Promise<SensorReading[]> => {
   // Convert lastUpdated strings to Date objects
   return data.map((sensor) => ({
     ...sensor,
-    lastUpdated: new Date(sensor.lastUpdated),
+    lastUpdated: sensor.lastUpdated ? new Date(sensor.lastUpdated) : null,
   }));
 };
 
@@ -149,6 +150,8 @@ export default function Dashboard() {
         return <Waves className="h-5 w-5" />;
       case 'flowRate':
         return <GaugeIcon className="h-5 w-5" />;
+      case 'tds':
+        return <ArrowRight className="h-5 w-5" />;
       default:
         return <Activity className="h-5 w-5" />;
     }
@@ -300,8 +303,11 @@ export default function Dashboard() {
                   >
                     <div className="font-semibold">{sensor.name}</div>
                     <div className="text-sm">
-                      Current: {sensor.value.toFixed(2)} {sensor.unit} • Limit:{' '}
-                      {sensor.threshold.label} {sensor.unit}
+                      Current:{' '}
+                      {sensor.value
+                        ? `${sensor.value.toFixed(2)} ${sensor.unit}`
+                        : 'N/A'}{' '}
+                      • Limit: {sensor.threshold.label} {sensor.unit}
                     </div>
                   </div>
                 );
@@ -338,20 +344,29 @@ export default function Dashboard() {
                   {getIcon(sensor.id)}
                   <Badge
                     variant={
-                      sensor.status === 'compliant' ? 'default' : 'destructive'
+                      sensor.status === 'compliant'
+                        ? 'default'
+                        : sensor.status === 'violation'
+                          ? 'destructive'
+                          : 'outline'
                     }
                     className="font-bold text-xs"
                   >
                     {sensor.status === 'compliant'
                       ? 'COMPLIANT'
-                      : 'NON-COMPLIANT'}
+                      : sensor.status === 'violation'
+                        ? 'NON-COMPLIANT '
+                        : 'NO DATA'}
                   </Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <SensorGauge sensor={sensor} />
                 <div className="mt-3 text-center text-muted-foreground text-xs">
-                  Updated: {sensor.lastUpdated.toLocaleString()}
+                  Updated:{' '}
+                  {sensor.lastUpdated
+                    ? sensor.lastUpdated.toLocaleString()
+                    : 'N/A'}
                 </div>
               </CardContent>
             </Card>
@@ -456,7 +471,8 @@ export default function Dashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-bold text-2xl">
-                    {sensors.find((s) => s.id === 'ph')?.value.toFixed(2)}
+                    {sensors.find((s) => s.id === 'ph')?.value?.toFixed(2) ??
+                      'N/A'}
                   </div>
                   <div className="text-muted-foreground text-xs">24h avg</div>
                 </div>
@@ -499,7 +515,7 @@ export default function Dashboard() {
                   <div className="font-bold text-2xl">
                     {sensors
                       .find((s) => s.id === 'dissolvedOxygen')
-                      ?.value.toFixed(1)}{' '}
+                      ?.value?.toFixed(1) ?? 'N/A'}{' '}
                     mg/L
                   </div>
                   <div className="text-muted-foreground text-xs">
@@ -530,7 +546,7 @@ export default function Dashboard() {
                   <div className="font-bold text-2xl">
                     {sensors
                       .find((s) => s.id === 'turbidity')
-                      ?.value.toFixed(1)}{' '}
+                      ?.value?.toFixed(1) ?? 'N/A'}{' '}
                     NTU
                   </div>
                   <div className="text-muted-foreground text-xs">
@@ -642,6 +658,14 @@ export default function Dashboard() {
                     dataKey="flowRate"
                     stroke="#ef4444"
                     name="Flow Rate"
+                    dot={false}
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="tds"
+                    stroke="#14b8a6"
+                    name="TDS"
                     dot={false}
                     strokeWidth={2}
                   />

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import type { SensorType } from '@/constants/config';
 import { SENSOR_CONFIG } from '@/constants/config';
 import { createClient } from '@/lib/supabase/server';
+import type { SensorType } from '@/types';
 import {
   calculateStatus,
   formatThresholdLabel,
@@ -22,9 +22,9 @@ export async function GET() {
         .eq('type', type)
         .order('recorded_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (error || !data) {
+      if (error) {
         console.error(`Error fetching ${type}:`, error);
         return null;
       }
@@ -35,32 +35,30 @@ export async function GET() {
     const latestReadings = await Promise.all(latestReadingsPromises);
 
     // Map to the expected response format
-    const mappedSensors = sensorTypes
-      .map((type, index) => {
-        const config = SENSOR_CONFIG[type];
-        const reading = latestReadings[index];
+    const mappedSensors = sensorTypes.map((type, index) => {
+      const config = SENSOR_CONFIG[type];
+      const reading = latestReadings[index];
 
-        if (!reading) return null;
-
-        return {
-          id: config.id,
-          name: config.name,
-          value: reading.value,
-          unit: config.unit,
-          lastUpdated: reading.recorded_at,
-          threshold: {
-            min: config.threshold.min,
-            max: config.threshold.max,
-            label: formatThresholdLabel(config.threshold),
-          },
-          ranges: {
-            min: config.ranges.min,
-            max: config.ranges.max,
-          },
-          status: calculateStatus(reading.value, config.threshold),
-        };
-      })
-      .filter((sensor) => sensor !== null);
+      return {
+        id: config.id,
+        name: config.name,
+        value: reading?.value || null,
+        unit: config.unit,
+        lastUpdated: reading?.recorded_at || null,
+        threshold: {
+          min: config.threshold.min,
+          max: config.threshold.max,
+          label: formatThresholdLabel(config.threshold),
+        },
+        ranges: {
+          min: config.ranges.min,
+          max: config.ranges.max,
+        },
+        status: reading?.value
+          ? calculateStatus(reading.value, config.threshold)
+          : null,
+      };
+    });
 
     return NextResponse.json(mappedSensors);
   } catch (err) {
