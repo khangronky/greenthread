@@ -2,32 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import type { SensorType } from '@/constants/config';
 import { SENSOR_CONFIG } from '@/constants/config';
 import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/supabase';
 import { calculateStatus } from '@/utils/sensor-data-helper';
-
-// Map camelCase to snake_case for database queries
-const sensorTypeToDb: Record<
-  SensorType,
-  Database['public']['Enums']['sensor_type']
-> = {
-  ph: 'ph',
-  dissolvedOxygen: 'dissolved_oxygen',
-  turbidity: 'turbidity',
-  conductivity: 'conductivity',
-  flowRate: 'flow_rate',
-};
-
-// Map snake_case from DB to camelCase
-const dbToSensorType: Record<
-  Database['public']['Enums']['sensor_type'],
-  SensorType
-> = {
-  ph: 'ph',
-  dissolved_oxygen: 'dissolvedOxygen',
-  turbidity: 'turbidity',
-  conductivity: 'conductivity',
-  flow_rate: 'flowRate',
-};
 
 export async function GET(request: NextRequest) {
   try {
@@ -72,14 +47,8 @@ export async function GET(request: NextRequest) {
     let query = supabase.from('sensor_data').select('*', { count: 'exact' });
 
     // Apply sensor type filter
-    if (sensorType && sensorType !== 'all') {
-      // Convert camelCase to snake_case for database
-      const sensorTypeKey = sensorType as keyof typeof sensorTypeToDb;
-      const dbSensorType = sensorTypeToDb[sensorTypeKey];
-
-      if (dbSensorType) {
-        query = query.eq('type', dbSensorType);
-      }
+    if (sensorType) {
+      query = query.eq('type', sensorType);
     }
 
     // Apply date range filters
@@ -110,8 +79,7 @@ export async function GET(request: NextRequest) {
     // Transform the data to include calculated fields
     const transformedData = (data || []).map((reading) => {
       // Get sensor config based on type
-      const sensorTypeKey = dbToSensorType[reading.type];
-      const config = SENSOR_CONFIG[sensorTypeKey];
+      const config = SENSOR_CONFIG[reading.type as SensorType];
 
       // Calculate status based on thresholds
       const status = calculateStatus(reading.value, config.threshold);

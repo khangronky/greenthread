@@ -14,7 +14,7 @@ export type Database = {
           created_at: string;
           id: string;
           recorded_at: string;
-          type: Database['public']['Enums']['sensor_type'];
+          type: string;
           unit: string;
           value: number;
         };
@@ -22,7 +22,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           recorded_at: string;
-          type: Database['public']['Enums']['sensor_type'];
+          type: string;
           unit: string;
           value: number;
         };
@@ -30,7 +30,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           recorded_at?: string;
-          type?: Database['public']['Enums']['sensor_type'];
+          type?: string;
           unit?: string;
           value?: number;
         };
@@ -65,12 +65,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      sensor_type:
-        | 'ph'
-        | 'dissolved_oxygen'
-        | 'turbidity'
-        | 'conductivity'
-        | 'flow_rate';
+      [_ in never]: never;
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -200,14 +195,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      sensor_type: [
-        'ph',
-        'dissolved_oxygen',
-        'turbidity',
-        'conductivity',
-        'flow_rate',
-      ],
-    },
+    Enums: {},
   },
 } as const;

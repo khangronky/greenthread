@@ -1,3 +1,1 @@
-alter table "public"."users" drop column "username";
-
-
+alter table "public"."users" drop column if exists "username";

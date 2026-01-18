@@ -2,23 +2,10 @@ import { NextResponse } from 'next/server';
 import type { SensorType } from '@/constants/config';
 import { SENSOR_CONFIG } from '@/constants/config';
 import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/supabase';
 import {
   calculateStatus,
   formatThresholdLabel,
 } from '@/utils/sensor-data-helper';
-
-// Map camelCase to snake_case for database queries
-const sensorTypeToDb: Record<
-  SensorType,
-  Database['public']['Enums']['sensor_type']
-> = {
-  ph: 'ph',
-  dissolvedOxygen: 'dissolved_oxygen',
-  turbidity: 'turbidity',
-  conductivity: 'conductivity',
-  flowRate: 'flow_rate',
-};
 
 export async function GET() {
   try {
@@ -32,7 +19,7 @@ export async function GET() {
       const { data, error } = await supabase
         .from('sensor_data')
         .select('*')
-        .eq('type', sensorTypeToDb[type])
+        .eq('type', type)
         .order('recorded_at', { ascending: false })
         .limit(1)
         .single();
