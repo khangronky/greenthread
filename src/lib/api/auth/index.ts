@@ -34,6 +34,10 @@ interface ResetPasswordRequest {
   password: string;
 }
 
+interface UpdateProfileRequest {
+  full_name: string;
+}
+
 interface AuthResponse {
   message: string;
   requiresVerification?: boolean;
@@ -46,6 +50,7 @@ interface AuthResponse {
 interface CurrentUser {
   id: string;
   email: string;
+  full_name: string | null;
 }
 
 // Mutations
@@ -111,10 +116,21 @@ export function useResetPasswordMutation() {
   });
 }
 
+export function useUpdateProfileMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UpdateProfileRequest) =>
+      fetcher<CurrentUser>('/auth/me', { method: 'PATCH', body: data }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.me });
+    },
+  });
+}
+
 // Queries
 export function useCurrentUser() {
   return useQuery({
     queryKey: authKeys.me,
-    queryFn: () => fetcher<{ user: CurrentUser }>('/auth/me'),
+    queryFn: () => fetcher<CurrentUser>('/auth/me'),
   });
 }
