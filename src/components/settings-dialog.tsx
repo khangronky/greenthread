@@ -189,7 +189,7 @@ export function SettingsDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeDialog()}>
       <DialogContent
-        className="max-h-[90vh] overflow-hidden p-0 sm:max-w-md"
+        className="h-[90vh] overflow-hidden p-0 md:max-w-2xl lg:max-w-6xl"
         showCloseButton={true}
       >
         <DialogTitle className="sr-only">Settings</DialogTitle>
@@ -198,7 +198,7 @@ export function SettingsDialog() {
         </DialogDescription>
         <div className="flex h-full">
           {/* Left Sidebar Navigation */}
-          <div className="flex w-100 flex-col border-r bg-muted/30">
+          <div className="flex w-1/5 flex-col border-r bg-muted/30">
             <div className="p-4">
               <h2 className="font-semibold">Settings</h2>
             </div>
