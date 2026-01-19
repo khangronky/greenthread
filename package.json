@@ -30,7 +30,8 @@
     "sb:up": "bun supabase migration up",
     "sb:reset": "bun supabase db reset",
     "sb:diff": "bun supabase db diff -f new_migration",
-    "sb:typegen": "bun supabase gen types typescript --local --schema public > ./src/types/supabase.ts && biome format --write ./src/types/supabase.ts"
+    "sb:typegen": "bun supabase gen types typescript --local --schema public > ./src/types/supabase.ts && biome format --write ./src/types/supabase.ts",
+    "trigger:dev": "bunx trigger.dev@latest dev"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
@@ -67,6 +68,7 @@
     "@tabler/icons-react": "^3.36.1",
     "@tanstack/react-query": "^5.90.18",
     "@tanstack/react-table": "^8.21.3",
+    "@trigger.dev/sdk": "4.3.2",
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -94,6 +96,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.3.11",
     "@tailwindcss/postcss": "^4.1.18",
+    "@trigger.dev/build": "4.3.2",
     "@types/node": "^25.0.9",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
