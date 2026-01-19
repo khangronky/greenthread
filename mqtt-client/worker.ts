@@ -67,20 +67,27 @@ client.on('message', async (topic, message) => {
     const timestamp = new Date().toISOString();
     console.log(`\n📨 [${timestamp}] Message received on topic: ${topic}`);
 
+    // Extract dataType from topic
+    const topicParts = topic.split('/');
+    const dataType = topicParts[2]; // greenthread/water/{dataType}
+
+    console.log(`📊 Data type: ${dataType}`);
+
     // Parse the MQTT payload
     const messageStr = message.toString();
     console.log(`📦 Raw payload: ${messageStr}`);
 
     let payload: any;
     try {
-      payload = JSON.parse(messageStr);
+      const reading = JSON.parse(messageStr);
+      payload = { ...reading, type: dataType };
     } catch (parseError) {
       console.error('❌ Failed to parse JSON payload:', parseError);
       return;
     }
 
     // Ensure payload is an array (webhook expects array of readings)
-    const readings = Array.isArray(payload) ? payload : [payload];
+    const readings = [payload];
 
     console.log(`📊 Sending ${readings.length} reading(s) to webhook...`);
 
