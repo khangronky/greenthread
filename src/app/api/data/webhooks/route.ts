@@ -33,10 +33,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data } = validationResult.data;
-
-    // Normalize data to always be an array
-    const readings = Array.isArray(data) ? data : [data];
+    const readings = validationResult.data;
 
     // Use admin client to bypass RLS policies
     const supabase = await createAdminClient();
