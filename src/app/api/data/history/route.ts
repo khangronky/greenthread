@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import type { HistoricalDataPoint, SensorType } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // Transform the database records into the expected format
     // Group readings by timestamp and create data points
-    const dataMap = new Map<string, any>();
+    const dataMap = new Map<string, HistoricalDataPoint>();
 
     for (const reading of data || []) {
       const timestamp = reading.recorded_at;
@@ -46,28 +47,15 @@ export async function GET(request: NextRequest) {
           turbidity: null,
           conductivity: null,
           flowRate: null,
+          tds: null,
         });
       }
 
-      const dataPoint = dataMap.get(timestamp);
+      const dataPoint = dataMap.get(timestamp)!;
 
       // Map database sensor types to frontend field names
-      switch (reading.type) {
-        case 'ph':
-          dataPoint.ph = reading.value;
-          break;
-        case 'dissolved_oxygen':
-          dataPoint.dissolvedOxygen = reading.value;
-          break;
-        case 'turbidity':
-          dataPoint.turbidity = reading.value;
-          break;
-        case 'conductivity':
-          dataPoint.conductivity = reading.value;
-          break;
-        case 'flow_rate':
-          dataPoint.flowRate = reading.value;
-          break;
+      if (reading.type in dataPoint) {
+        dataPoint[reading.type as SensorType] = reading.value;
       }
     }
 

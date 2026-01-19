@@ -1,11 +1,12 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import type { SensorType } from '@/types';
 
 // Define the sensor data type matching the database schema
 export type SensorDataRow = {
   id: string;
-  type: 'ph' | 'dissolved_oxygen' | 'turbidity' | 'conductivity' | 'flow_rate';
+  type: SensorType;
   value: number;
   unit: string;
   recorded_at: string;
@@ -23,10 +24,11 @@ export type TableColumn = {
 // Sensor type display mappings
 const sensorTypeLabels: Record<SensorDataRow['type'], string> = {
   ph: 'pH Level',
-  dissolved_oxygen: 'Dissolved Oxygen',
+  dissolvedOxygen: 'Dissolved Oxygen',
   turbidity: 'Turbidity',
   conductivity: 'Conductivity',
-  flow_rate: 'Flow Rate',
+  flowRate: 'Flow Rate',
+  tds: 'Total Dissolved Solids',
 };
 
 // Sensor type badge colors
@@ -35,10 +37,11 @@ const sensorTypeBadgeVariants: Record<
   'default' | 'secondary' | 'outline'
 > = {
   ph: 'default',
-  dissolved_oxygen: 'default',
+  dissolvedOxygen: 'default',
   turbidity: 'secondary',
   conductivity: 'secondary',
-  flow_rate: 'outline',
+  flowRate: 'outline',
+  tds: 'outline',
 };
 
 // Simple column definitions

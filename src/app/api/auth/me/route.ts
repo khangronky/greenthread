@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { createDynamicClient } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const supabase = await createDynamicClient();
+    const supabase = await createClient();
     const {
       data: { user: authUser },
     } = await supabase.auth.getUser();
@@ -14,7 +14,7 @@ export async function GET() {
 
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email, full_name, created_at')
+      .select('*')
       .eq('id', authUser.id)
       .single();
 
@@ -22,7 +22,7 @@ export async function GET() {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json(user);
   } catch (error) {
     console.error('Get current user error:', error);
     return NextResponse.json(
@@ -34,7 +34,7 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const supabase = await createDynamicClient();
+    const supabase = await createClient();
     const {
       data: { user: authUser },
     } = await supabase.auth.getUser();
@@ -49,14 +49,14 @@ export async function PATCH(request: Request) {
       .from('users')
       .update(updates)
       .eq('id', authUser.id)
-      .select('id, email, full_name, created_at')
+      .select('*')
       .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json(user);
   } catch (error) {
     console.error('Update user error:', error);
     return NextResponse.json(

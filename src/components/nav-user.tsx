@@ -1,7 +1,8 @@
 'use client';
 
-import { ChevronsUpDown, LogOut } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useCurrentUser } from '@/lib/api/auth';
 import { createClient } from '@/lib/supabase/client';
+import { useSettingsDialogStore } from '@/stores/settings-dialog.store';
 import { getDisplayNameFromEmail } from '@/utils/email-helper';
 
 export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
@@ -24,15 +26,16 @@ export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const { data, isLoading } = useCurrentUser();
+  const { data: user, isLoading } = useCurrentUser();
+  const openSettingsDialog = useSettingsDialogStore(
+    (state) => state.openDialog
+  );
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
     router.refresh();
   };
-
-  const user = data?.user;
 
   if (isLoading || !user) {
     return <Skeleton className="h-12" />;
@@ -59,7 +62,7 @@ export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
             <>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">
-                  {getDisplayNameFromEmail(user.email)}
+                  {user.full_name || getDisplayNameFromEmail(user.email)}
                 </span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
@@ -88,13 +91,17 @@ export function NavUser({ sidebarOpen }: { sidebarOpen: boolean }) {
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">
-                {getDisplayNameFromEmail(user.email)}
+                {user.full_name || getDisplayNameFromEmail(user.email)}
               </span>
               <span className="truncate text-xs">{user.email}</span>
             </div>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => openSettingsDialog()}>
+          <Settings />
+          Settings
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut />
           Log out

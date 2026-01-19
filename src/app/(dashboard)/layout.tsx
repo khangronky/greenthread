@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import { SettingsDialog } from '@/components/settings-dialog';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function DashboardLayout({
@@ -46,6 +47,8 @@ export default async function DashboardLayout({
         {/* Page Content */}
         <div className="p-6">{children}</div>
       </main>
+
+      <SettingsDialog />
     </div>
   );
 }

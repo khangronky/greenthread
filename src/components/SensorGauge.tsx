@@ -1,5 +1,5 @@
 import { PolarAngleAxis, RadialBar, RadialBarChart } from 'recharts';
-import type { SensorReading } from '@/data/mockData';
+import type { SensorReading } from '@/types';
 
 interface SensorGaugeProps {
   sensor: SensorReading;
@@ -7,10 +7,11 @@ interface SensorGaugeProps {
 
 export default function SensorGauge({ sensor }: SensorGaugeProps) {
   // Calculate percentage for the gauge (0-100)
-  const percentage =
-    ((sensor.value - sensor.ranges.min) /
-      (sensor.ranges.max - sensor.ranges.min)) *
-    100;
+  const percentage = sensor.value
+    ? ((sensor.value - sensor.ranges.min) /
+        (sensor.ranges.max - sensor.ranges.min)) *
+      100
+    : 0;
 
   // Determine compliance status
   const isCompliant = sensor.status === 'compliant';
@@ -54,8 +55,12 @@ export default function SensorGauge({ sensor }: SensorGaugeProps) {
 
         {/* Center value display */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pt-10">
-          <div className="font-bold text-2xl">{sensor.value.toFixed(1)}</div>
-          <div className="text-muted-foreground text-sm">{sensor.unit}</div>
+          <div className="font-bold text-2xl">
+            {sensor.value?.toFixed(1) ?? 'N/A'}
+          </div>
+          {sensor.value !== null && (
+            <div className="text-muted-foreground text-sm">{sensor.unit}</div>
+          )}
         </div>
       </div>
 

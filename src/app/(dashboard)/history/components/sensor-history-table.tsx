@@ -106,10 +106,11 @@ const exportToCSV = (data: SensorDataRow[], filename: string) => {
   // Map sensor type to readable labels
   const sensorTypeLabels: Record<SensorDataRow['type'], string> = {
     ph: 'pH Level',
-    dissolved_oxygen: 'Dissolved Oxygen',
+    dissolvedOxygen: 'Dissolved Oxygen',
     turbidity: 'Turbidity',
     conductivity: 'Conductivity',
-    flow_rate: 'Flow Rate',
+    flowRate: 'Flow Rate',
+    tds: 'Total Dissolved Solids',
   };
 
   // Convert data to CSV rows
@@ -316,12 +317,13 @@ export function SensorHistoryTable() {
               <SelectContent>
                 <SelectItem value="all">All Sensors</SelectItem>
                 <SelectItem value="ph">pH Level</SelectItem>
-                <SelectItem value="dissolved_oxygen">
+                <SelectItem value="dissolvedOxygen">
                   Dissolved Oxygen
                 </SelectItem>
                 <SelectItem value="turbidity">Turbidity</SelectItem>
                 <SelectItem value="conductivity">Conductivity</SelectItem>
-                <SelectItem value="flow_rate">Flow Rate</SelectItem>
+                <SelectItem value="flowRate">Flow Rate</SelectItem>
+                <SelectItem value="tds">Total Dissolved Solids</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -353,7 +355,6 @@ export function SensorHistoryTable() {
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
-                initialFocus
                 mode="range"
                 defaultMonth={dateRange?.from}
                 selected={dateRange}
