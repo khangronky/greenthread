@@ -38,6 +38,11 @@ interface UpdateProfileRequest {
   full_name: string;
 }
 
+interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 interface AuthResponse {
   message: string;
   requiresVerification?: boolean;
@@ -124,6 +129,16 @@ export function useUpdateProfileMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: authKeys.me });
     },
+  });
+}
+
+export function useChangePasswordMutation() {
+  return useMutation({
+    mutationFn: (data: ChangePasswordRequest) =>
+      fetcher<AuthResponse>('/auth/password/change', {
+        method: 'POST',
+        body: data,
+      }),
   });
 }
 

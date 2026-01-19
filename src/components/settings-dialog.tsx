@@ -1,7 +1,16 @@
 'use client';
 
-import { Check, Copy, Database, Loader2, User } from 'lucide-react';
+import {
+  Check,
+  Copy,
+  Database,
+  Eye,
+  EyeOff,
+  Loader2,
+  User,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,7 +30,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { useCurrentUser, useUpdateProfileMutation } from '@/lib/api/auth';
+import {
+  useChangePasswordMutation,
+  useCurrentUser,
+  useUpdateProfileMutation,
+} from '@/lib/api/auth';
 import { cn } from '@/lib/utils';
 import {
   type SettingsTab,
@@ -42,8 +55,17 @@ const TAB_LABELS: Record<SettingsTab, string> = {
 function UserSettingsContent() {
   const { data: user } = useCurrentUser();
   const updateProfile = useUpdateProfileMutation();
+  const changePassword = useChangePasswordMutation();
   const [displayName, setDisplayName] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (user?.full_name !== undefined) {
@@ -62,6 +84,57 @@ function UserSettingsContent() {
       {
         onSuccess: () => {
           setHasChanges(false);
+          toast.success('Profile updated successfully');
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof Error ? error.message : 'Failed to update profile'
+          );
+        },
+      }
+    );
+  };
+
+  const handlePasswordChange = () => {
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    // Validate password strength
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=[\]{};':"\\|,.<>/?]).+$/;
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
+    if (!passwordRegex.test(newPassword)) {
+      toast.error(
+        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+      );
+      return;
+    }
+
+    // Check that new password is different from current
+    if (currentPassword === newPassword) {
+      toast.error('New password must be different from current password');
+      return;
+    }
+
+    changePassword.mutate(
+      { currentPassword, newPassword },
+      {
+        onSuccess: () => {
+          setCurrentPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+          toast.success('Password changed successfully');
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof Error ? error.message : 'Failed to change password'
+          );
         },
       }
     );
@@ -115,6 +188,114 @@ function UserSettingsContent() {
             Save Changes
           </Button>
         )}
+      </div>
+
+      <Separator />
+
+      <div>
+        <h3 className="font-medium text-lg">Change Password</h3>
+        <p className="text-muted-foreground text-sm">
+          Update your password to keep your account secure.
+        </p>
+      </div>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="current-password">Current Password</Label>
+          <div className="relative">
+            <Input
+              id="current-password"
+              type={showCurrentPassword ? 'text' : 'password'}
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter your current password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-full px-3 text-neutral-500 hover:text-neutral-700"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            >
+              {showCurrentPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="new-password">New Password</Label>
+          <div className="relative">
+            <Input
+              id="new-password"
+              type={showNewPassword ? 'text' : 'password'}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter your new password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-full px-3 text-neutral-500 hover:text-neutral-700"
+              onClick={() => setShowNewPassword(!showNewPassword)}
+            >
+              {showNewPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="confirm-password">Confirm New Password</Label>
+          <div className="relative">
+            <Input
+              id="confirm-password"
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your new password"
+              className="pr-10"
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute top-0 right-0 h-full px-3 text-neutral-500 hover:text-neutral-700"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <p className="text-muted-foreground text-xs">
+            Password must be at least 8 characters with uppercase, lowercase,
+            number, and special character.
+          </p>
+        </div>
+        <Button
+          onClick={handlePasswordChange}
+          disabled={
+            changePassword.isPending ||
+            !currentPassword ||
+            !newPassword ||
+            !confirmPassword
+          }
+          className="w-full"
+        >
+          {changePassword.isPending && (
+            <Loader2 className="mr-2 size-4 animate-spin" />
+          )}
+          Change Password
+        </Button>
       </div>
     </div>
   );
@@ -196,7 +377,7 @@ export function SettingsDialog() {
         <DialogDescription className="sr-only">
           Manage your application settings
         </DialogDescription>
-        <div className="flex h-full">
+        <div className="flex h-full overflow-hidden">
           {/* Left Sidebar Navigation */}
           <div className="flex w-1/5 flex-col border-r bg-muted/30">
             <div className="p-4">
@@ -251,7 +432,7 @@ export function SettingsDialog() {
             </div>
 
             {/* Content */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 overflow-auto">
               <div className="p-6">
                 {activeTab === 'user' && <UserSettingsContent />}
                 {activeTab === 'data-ingestion' && <DataIngestionContent />}
