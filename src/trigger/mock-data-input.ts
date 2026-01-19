@@ -7,13 +7,11 @@ export const mockIoTDataCron = schedules.task({
   run: async (payload) => {
     logger.log('Mock IoT data cron job started', { payload });
 
-    // Get webhook secret from environment
-    const webhookSecret = process.env.WEBHOOK_SECRET;
-    const webhookUrl = process.env.NEXT_PUBLIC_APP_URL
-      ? `${process.env.NEXT_PUBLIC_APP_URL}/api/data/webhooks`
-      : 'http://localhost:3000/api/data/webhooks';
+    const WEBHOOK_URL =
+      process.env.WEBHOOK_URL || 'http://localhost:3000/api/data/webhooks';
+    const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
-    if (!webhookSecret) {
+    if (!WEBHOOK_SECRET) {
       logger.error('WEBHOOK_SECRET not found in environment variables');
       return { success: false, error: 'Missing webhook secret' };
     }
@@ -38,16 +36,16 @@ export const mockIoTDataCron = schedules.task({
     }));
 
     logger.log('Sending mock IoT data to webhook', {
-      url: webhookUrl,
+      url: WEBHOOK_URL,
       data: mockData,
     });
 
     try {
-      const response = await fetch(webhookUrl, {
+      const response = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-webhook-secret': webhookSecret,
+          'x-webhook-secret': WEBHOOK_SECRET,
         },
         body: JSON.stringify(mockData),
       });
