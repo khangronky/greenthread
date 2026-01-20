@@ -144,7 +144,7 @@ export function LoginForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+      <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
         <p className="text-neutral-600 text-sm">
           Don&apos;t have an account?{' '}
           <Link
