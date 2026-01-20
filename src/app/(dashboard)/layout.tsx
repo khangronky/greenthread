@@ -28,7 +28,10 @@ export default async function DashboardLayout({
         <header className="sticky top-0 z-10 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <div className="text-muted-foreground text-sm">
+              <div
+                className="text-muted-foreground text-sm"
+                suppressHydrationWarning
+              >
                 {new Date().toLocaleDateString('en-US', {
                   weekday: 'long',
                   year: 'numeric',

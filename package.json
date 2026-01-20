@@ -38,6 +38,8 @@
     "trigger:deploy": "bunx @trigger.dev:latest deploy"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.10",
+    "@ai-sdk/react": "^3.0.44",
     "@hookform/resolvers": "^5.2.2",
     "@octokit/webhooks": "^14.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -72,6 +74,7 @@
     "@tanstack/react-query": "^5.90.19",
     "@tanstack/react-table": "^8.21.3",
     "@trigger.dev/sdk": "4.3.2",
+    "ai": "^6.0.42",
     "animejs": "^3.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
