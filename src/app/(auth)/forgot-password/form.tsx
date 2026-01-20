@@ -182,7 +182,7 @@ export function ForgotPasswordForm() {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+        <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
           <Link
             href="/login"
             className="text-neutral-600 text-sm hover:text-neutral-900 hover:underline"
@@ -257,7 +257,7 @@ export function ForgotPasswordForm() {
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+        <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
           <button
             type="button"
             onClick={() => setStage('email')}
@@ -380,7 +380,7 @@ export function ForgotPasswordForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+      <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
         <Link
           href="/login"
           className="text-neutral-600 text-sm hover:text-neutral-900 hover:underline"

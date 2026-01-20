@@ -177,7 +177,7 @@ export function RegisterForm() {
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+        <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
           <button
             type="button"
             onClick={() => setOtpSent(false)}
@@ -312,7 +312,7 @@ export function RegisterForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t border-neutral-100 pt-6">
+      <CardFooter className="flex justify-center border-neutral-100 border-t pt-6">
         <p className="text-neutral-600 text-sm">
           Already have an account?{' '}
           <Link
