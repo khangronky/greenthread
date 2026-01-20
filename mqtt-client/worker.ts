@@ -79,8 +79,8 @@ client.on('message', async (topic, message) => {
 
     let payload: any;
     try {
-      const reading = JSON.parse(messageStr);
-      payload = { ...reading, type: dataType };
+      const { unit, value } = JSON.parse(messageStr);
+      payload = { type: dataType, unit, value, recorded_at: timestamp };
     } catch (parseError) {
       console.error('❌ Failed to parse JSON payload:', parseError);
       return;

@@ -34,7 +34,8 @@
     "sb:reset": "bun supabase db reset",
     "sb:diff": "bun supabase db diff -f new_migration",
     "sb:typegen": "bun supabase gen types typescript --local --schema public > ./src/types/supabase.ts && biome format --write ./src/types/supabase.ts",
-    "trigger:dev": "bunx trigger.dev@latest dev"
+    "trigger:dev": "bunx @trigger.dev:latest dev",
+    "trigger:deploy": "bunx @trigger.dev:latest deploy"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
