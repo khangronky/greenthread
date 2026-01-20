@@ -7,7 +7,10 @@ import type { SensorType } from '@/types';
 import type { Database } from '@/types/supabase';
 
 // Convert UIMessage parts to content string
-function extractContent(message: { parts?: Array<{ type: string; text?: string }>; content?: string }): string {
+function extractContent(message: {
+  parts?: Array<{ type: string; text?: string }>;
+  content?: string;
+}): string {
   if (message.content) return message.content;
   if (!message.parts) return '';
   return message.parts
@@ -58,7 +61,14 @@ Severity levels:
 Be concise but thorough. Focus on the "why" behind anomalies and what actions should be taken.`;
 
 async function getHistoricalAverages(supabase: SupabaseClient<Database>) {
-  const sensorTypes: SensorType[] = ['ph', 'dissolvedOxygen', 'turbidity', 'conductivity', 'flowRate', 'tds'];
+  const sensorTypes: SensorType[] = [
+    'ph',
+    'dissolvedOxygen',
+    'turbidity',
+    'conductivity',
+    'flowRate',
+    'tds',
+  ];
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -72,10 +82,15 @@ async function getHistoricalAverages(supabase: SupabaseClient<Database>) {
       .gte('recorded_at', sevenDaysAgo.toISOString());
 
     if (data && data.length > 0) {
-      const values = data.map((d) => d.value).filter((v): v is number => v !== null);
+      const values = data
+        .map((d) => d.value)
+        .filter((v): v is number => v !== null);
       if (values.length > 0) {
         const avg = values.reduce((a, b) => a + b, 0) / values.length;
-        averages[type] = { average: Number(avg.toFixed(2)), count: values.length };
+        averages[type] = {
+          average: Number(avg.toFixed(2)),
+          count: values.length,
+        };
       }
     }
   }
@@ -96,7 +111,10 @@ export async function POST(req: Request) {
       .limit(20);
 
     // Group by sensor type to get latest readings
-    const latestReadings: Record<string, { value: number; recorded_at: string }> = {};
+    const latestReadings: Record<
+      string,
+      { value: number; recorded_at: string }
+    > = {};
     if (currentData) {
       for (const reading of currentData) {
         if (!latestReadings[reading.type]) {
@@ -115,12 +133,15 @@ export async function POST(req: Request) {
     const sensorContext = Object.entries(latestReadings)
       .map(([type, data]) => {
         const config = SENSOR_CONFIG[type as SensorType];
-        const threshold = COMPLIANCE_THRESHOLDS[type as keyof typeof COMPLIANCE_THRESHOLDS];
+        const threshold =
+          COMPLIANCE_THRESHOLDS[type as keyof typeof COMPLIANCE_THRESHOLDS];
         if (!config || !threshold) return null;
 
         let status = 'compliant';
-        if ('min' in threshold && data.value < threshold.min) status = 'violation';
-        if ('max' in threshold && data.value > threshold.max) status = 'violation';
+        if ('min' in threshold && data.value < threshold.min)
+          status = 'violation';
+        if ('max' in threshold && data.value > threshold.max)
+          status = 'violation';
 
         const historical = historicalAverages[type];
         const historicalInfo = historical
@@ -133,10 +154,16 @@ export async function POST(req: Request) {
       .join('\n');
 
     // Convert UIMessages to ModelMessages format
-    const convertedMessages = messages.map((msg: { role: string; parts?: Array<{ type: string; text?: string }>; content?: string }) => ({
-      role: msg.role as 'user' | 'assistant',
-      content: extractContent(msg),
-    }));
+    const convertedMessages = messages.map(
+      (msg: {
+        role: string;
+        parts?: Array<{ type: string; text?: string }>;
+        content?: string;
+      }) => ({
+        role: msg.role as 'user' | 'assistant',
+        content: extractContent(msg),
+      })
+    );
 
     const contextMessage = {
       role: 'system' as const,
@@ -167,7 +194,10 @@ export async function POST(req: Request) {
         try {
           await result;
         } catch (streamError: unknown) {
-          const errorMessage = streamError instanceof Error ? streamError.message : 'Unknown error';
+          const errorMessage =
+            streamError instanceof Error
+              ? streamError.message
+              : 'Unknown error';
 
           // Check for quota exceeded error
           if (errorMessage.includes('quota') || errorMessage.includes('429')) {
@@ -186,15 +216,20 @@ export async function POST(req: Request) {
   } catch (error: unknown) {
     console.error('AI Explain error:', error);
 
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
 
     // Check for quota/rate limit errors
-    if (errorMessage.includes('quota') || errorMessage.includes('429') || errorMessage.includes('rate')) {
+    if (
+      errorMessage.includes('quota') ||
+      errorMessage.includes('429') ||
+      errorMessage.includes('rate')
+    ) {
       return new Response(
         `⚠️ **API Quota Exceeded**\n\nThe Google Gemini API rate limit has been reached. Please wait 1 minute and try again.\n\nDetails: ${errorMessage.slice(0, 300)}`,
         {
           status: 200,
-          headers: { 'Content-Type': 'text/plain' }
+          headers: { 'Content-Type': 'text/plain' },
         }
       );
     }

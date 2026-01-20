@@ -1,9 +1,18 @@
 'use client';
 
-import { 
-  Brain, Clock, Minus, TrendingDown, TrendingUp, 
-  Bot, Send, Loader2, User, AlertCircle, Sparkles,
-  MessageSquareText
+import {
+  Brain,
+  Clock,
+  Minus,
+  TrendingDown,
+  TrendingUp,
+  Bot,
+  Send,
+  Loader2,
+  User,
+  AlertCircle,
+  Sparkles,
+  MessageSquareText,
 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useChat } from '@ai-sdk/react';
@@ -12,8 +21,20 @@ import { TextStreamChatTransport } from 'ai';
 // UI Components
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -23,7 +44,9 @@ import { useAIExplainStore } from '@/stores/ai-explain.store';
 import type { AIExplanation } from '@/types';
 
 // Helper to extract text content from UIMessage parts
-function getMessageContent(message: { parts?: Array<{ type: string; text?: string }> }): string {
+function getMessageContent(message: {
+  parts?: Array<{ type: string; text?: string }>;
+}): string {
   if (!message.parts) return '';
   return message.parts
     .filter((part) => part.type === 'text' && part.text)
@@ -65,7 +88,8 @@ export default function AIExplain() {
 
   // Auto-scroll chat
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
   // --- Handlers ---
@@ -73,7 +97,7 @@ export default function AIExplain() {
     setIsChatOpen(true);
     // Send a context-aware prompt automatically
     sendMessage({
-      text: `Analyze this ${exp.sensor} reading: Value is ${exp.value}, Status is ${exp.status}. The main factors are ${exp.factors.map(f => f.factor).join(', ')}. What should I do first?`
+      text: `Analyze this ${exp.sensor} reading: Value is ${exp.value}, Status is ${exp.status}. The main factors are ${exp.factors.map((f) => f.factor).join(', ')}. What should I do first?`,
     });
   };
 
@@ -84,7 +108,14 @@ export default function AIExplain() {
     setInput('');
   };
 
-  const sensors = ['all', 'pH Level', 'Dissolved Oxygen', 'Turbidity', 'Conductivity', 'Flow Rate'];
+  const sensors = [
+    'all',
+    'pH Level',
+    'Dissolved Oxygen',
+    'Turbidity',
+    'Conductivity',
+    'Flow Rate',
+  ];
 
   const filteredExplanations = explanations.filter(
     (exp) => selectedSensor === 'all' || exp.sensor === selectedSensor
@@ -125,28 +156,53 @@ export default function AIExplain() {
       {/* 3. Analysis List */}
       <div className="grid gap-4">
         {filteredExplanations.map((explanation) => (
-          <Card key={explanation.id} className="overflow-hidden transition-all hover:border-primary/50">
+          <Card
+            key={explanation.id}
+            className="overflow-hidden transition-all hover:border-primary/50"
+          >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`rounded-full p-2 ${explanation.status === 'anomaly' ? 'bg-destructive/10' : 'bg-primary/10'}`}>
-                    {explanation.status === 'anomaly' ? <TrendingDown className="h-5 w-5 text-destructive" /> : <TrendingUp className="h-5 w-5 text-primary" />}
+                  <div
+                    className={`rounded-full p-2 ${explanation.status === 'anomaly' ? 'bg-destructive/10' : 'bg-primary/10'}`}
+                  >
+                    {explanation.status === 'anomaly' ? (
+                      <TrendingDown className="h-5 w-5 text-destructive" />
+                    ) : (
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                    )}
                   </div>
                   <div>
-                    <CardTitle className="text-lg">{explanation.sensor}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {explanation.sensor}
+                    </CardTitle>
                     <CardDescription className="flex items-center gap-1 text-xs">
-                      <Clock className="h-3 w-3" /> {explanation.timestamp.toLocaleString()}
+                      <Clock className="h-3 w-3" />{' '}
+                      {explanation.timestamp.toLocaleString()}
                     </CardDescription>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="font-bold text-xl">{explanation.value.toFixed(2)}</div>
-                    <Badge variant={explanation.status === 'anomaly' ? 'destructive' : 'secondary'} className="text-[10px] uppercase">
+                    <div className="font-bold text-xl">
+                      {explanation.value.toFixed(2)}
+                    </div>
+                    <Badge
+                      variant={
+                        explanation.status === 'anomaly'
+                          ? 'destructive'
+                          : 'secondary'
+                      }
+                      className="text-[10px] uppercase"
+                    >
                       {explanation.status}
                     </Badge>
                   </div>
-                  <Button size="sm" onClick={() => handleAskAI(explanation)} className="gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => handleAskAI(explanation)}
+                    className="gap-2"
+                  >
                     <Sparkles className="h-4 w-4" /> Explain
                   </Button>
                 </div>
@@ -158,11 +214,15 @@ export default function AIExplain() {
                   <div key={idx} className="rounded-md border p-3 text-sm">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium">{factor.factor}</span>
-                      <span className={`text-[10px] font-bold ${factor.impact === 'high' ? 'text-destructive' : 'text-primary'}`}>
+                      <span
+                        className={`text-[10px] font-bold ${factor.impact === 'high' ? 'text-destructive' : 'text-primary'}`}
+                      >
                         {factor.impact.toUpperCase()} IMPACT
                       </span>
                     </div>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{factor.description}</p>
+                    <p className="text-muted-foreground text-xs leading-relaxed">
+                      {factor.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -188,14 +248,23 @@ export default function AIExplain() {
             {messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center pt-20 text-center opacity-50">
                 <Brain className="mb-4 h-12 w-12" />
-                <p className="text-sm">Select "Explain" on a card to start analysis</p>
+                <p className="text-sm">
+                  Select "Explain" on a card to start analysis
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
                 {messages.map((m) => (
-                  <div key={m.id} className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    {m.role === 'assistant' && <Bot className="mt-1 h-5 w-5 text-primary" />}
-                    <div className={`rounded-lg px-4 py-2 text-sm max-w-[85%] ${m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted border'}`}>
+                  <div
+                    key={m.id}
+                    className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    {m.role === 'assistant' && (
+                      <Bot className="mt-1 h-5 w-5 text-primary" />
+                    )}
+                    <div
+                      className={`rounded-lg px-4 py-2 text-sm max-w-[85%] ${m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted border'}`}
+                    >
                       {getMessageContent(m)}
                     </div>
                   </div>
@@ -208,7 +277,11 @@ export default function AIExplain() {
                 {error && (
                   <div className="flex gap-2 text-sm text-destructive bg-destructive/10 rounded-lg p-3 border border-destructive/30">
                     <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
-                    <span>Error: {error.message || 'Failed to get response. Please try again.'}</span>
+                    <span>
+                      Error:{' '}
+                      {error.message ||
+                        'Failed to get response. Please try again.'}
+                    </span>
                   </div>
                 )}
               </div>
@@ -224,9 +297,9 @@ export default function AIExplain() {
                 placeholder="Ask follow-up questions..."
                 className="min-h-[80px] pr-12 resize-none"
               />
-              <Button 
-                type="submit" 
-                size="icon" 
+              <Button
+                type="submit"
+                size="icon"
                 className="absolute bottom-2 right-2 h-8 w-8"
                 disabled={isLoading || !input?.trim()}
               >
