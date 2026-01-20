@@ -42,7 +42,7 @@ export async function GET() {
       return {
         id: config.id,
         name: config.name,
-        value: reading?.value || null,
+        value: reading?.value ?? null,
         unit: config.unit,
         lastUpdated: reading?.recorded_at || null,
         threshold: {
