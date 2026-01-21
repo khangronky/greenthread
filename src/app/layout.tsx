@@ -9,6 +9,9 @@ const font = Inter({ subsets: ['latin', 'vietnamese'], display: 'block' });
 export const metadata: Metadata = {
   title: 'GreenThread',
   description: 'Water Management System for Textile Companies',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({
