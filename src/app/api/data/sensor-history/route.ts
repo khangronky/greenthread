@@ -79,6 +79,7 @@ export async function GET(request: NextRequest) {
     // Transform the data to include calculated fields
     const transformedData = (data || []).map((reading) => {
       // Get sensor config based on type
+      console.log(reading.type);
       const config = SENSOR_CONFIG[reading.type as SensorType];
 
       // Calculate status based on thresholds

@@ -1,4 +1,5 @@
 export type SensorType =
+  | 'temperature'
   | 'ph'
   | 'dissolvedOxygen'
   | 'turbidity'

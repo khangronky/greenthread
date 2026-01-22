@@ -23,6 +23,7 @@ export type TableColumn = {
 
 // Sensor type display mappings
 const sensorTypeLabels: Record<SensorDataRow['type'], string> = {
+  temperature: 'Temperature',
   ph: 'pH Level',
   dissolvedOxygen: 'Dissolved Oxygen',
   turbidity: 'Turbidity',
@@ -36,6 +37,7 @@ const sensorTypeBadgeVariants: Record<
   SensorDataRow['type'],
   'default' | 'secondary' | 'outline'
 > = {
+  temperature: 'default',
   ph: 'default',
   dissolvedOxygen: 'default',
   turbidity: 'secondary',

@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
       if (!dataMap.has(timestamp)) {
         dataMap.set(timestamp, {
           timestamp,
+          temperature: null,
           ph: null,
           dissolvedOxygen: null,
           turbidity: null,

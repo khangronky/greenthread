@@ -16,6 +16,13 @@ export const SENSOR_CONFIG: Record<
     };
   }
 > = {
+  temperature: {
+    id: 'temperature',
+    name: 'Temperature',
+    unit: '°C',
+    threshold: { min: 20, max: 30 },
+    ranges: { min: 0, max: 50 },
+  },
   ph: {
     id: 'ph',
     name: 'pH Level',

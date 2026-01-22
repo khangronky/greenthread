@@ -79,7 +79,7 @@ export default function Dashboard() {
   } = useQuery({
     queryKey: ['sensorReadings'],
     queryFn: fetchSensorData,
-    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchInterval: 10000, // Auto-refresh every 10 seconds
     staleTime: 20000, // Consider data stale after 20 seconds
     retry: 3, // Retry failed requests 3 times
   });
