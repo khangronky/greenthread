@@ -83,6 +83,8 @@ export const getHistoricalData = (days: number): HistoricalDataPoint[] => {
     data.push({
       timestamp: timestamp.toISOString(),
       ph: 7.2 + dayOffset + dailyCycle + (Math.random() - 0.5) * 0.3,
+      temperature:
+        25 + dayOffset * 2 + dailyCycle * 3 + (Math.random() - 0.5) * 1.5,
       dissolvedOxygen:
         6.5 + dayOffset * 2 - dailyCycle + (Math.random() - 0.5) * 0.8,
       turbidity:

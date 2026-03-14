@@ -1,5 +1,6 @@
 # GreenThread
 
+![alt text](public/cover.png)
 GreenThread is an intelligent wastewater monitoring and compliance platform designed for textile manufacturing facilities. It provides real-time sensor monitoring, AI-powered analytics, and automated compliance reporting to help facilities meet wastewater discharge standards.
 
 ## Core Features

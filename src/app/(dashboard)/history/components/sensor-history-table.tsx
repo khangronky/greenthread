@@ -106,6 +106,7 @@ const exportToCSV = (data: SensorDataRow[], filename: string) => {
   // Map sensor type to readable labels
   const sensorTypeLabels: Record<SensorDataRow['type'], string> = {
     ph: 'pH Level',
+    temperature: 'Temperature',
     dissolvedOxygen: 'Dissolved Oxygen',
     turbidity: 'Turbidity',
     conductivity: 'Conductivity',
